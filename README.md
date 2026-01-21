@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# calu-dj-vintage ⚡️
 
-## Getting Started
+**Vintage DJ site** com Next.js e Payload CMS — pronto para rodar localmente e fazer deploy no Vercel. Este repositório armazena os arquivos do frontend e a configuração do Payload (CMS) com suporte a uploads via Cloudflare R2 (compatível com S3).
 
-First, run the development server:
+---
+
+## 🚀 Rápido: rodando localmente
+
+1. Instale dependências:
+
+```bash
+npm install
+```
+
+2. Copie o arquivo de exemplo de variáveis de ambiente e ajuste os valores:
+
+```bash
+cp .env.example .env
+# editar .env com suas chaves
+```
+
+3. Rodar em dev:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abra http://localhost:3000 e acesse o Payload Admin para testar uploads.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🔧 Variáveis de ambiente (principais)
 
-## Learn More
+Defina no seu ambiente local e no Vercel (Production + Preview):
 
-To learn more about Next.js, take a look at the following resources:
+- `MONGODB_URI` - conexão MongoDB Atlas
+- `PAYLOAD_SECRET` - segredo do Payload
+- `NEXT_PUBLIC_SERVER_URL` - URL do site (ex.: `https://seu-site.vercel.app`)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Cloudflare R2 (recomendado):
+- `R2_ACCESS_KEY_ID`
+- `R2_SECRET_ACCESS_KEY`
+- `R2_BUCKET`
+- `R2_ACCOUNT_ID` (ou `R2_ENDPOINT`) - opcional
+- `R2_FOLDER` - opcional (pasta dentro do bucket)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+(compatível: também suportamos S3 via `S3_BUCKET`, `S3_REGION`, etc.)
 
-## Deploy on Vercel
+> ❗ Não commite arquivos `.env`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## ☁️ Configurando o Cloudflare R2 (resumo)
+
+1. No painel Cloudflare, crie um **R2 bucket**.
+2. Gere uma **Access Key / Secret** (ou use API Token com permissão R2). Guarde em `R2_ACCESS_KEY_ID` e `R2_SECRET_ACCESS_KEY`.
+3. Se quiser usar o endpoint por conta, defina `R2_ACCOUNT_ID` ou `R2_ENDPOINT`.
+4. No Vercel, adicione as variáveis acima em **Project → Settings → Environment Variables**.
+5. Deploy no Vercel; ao enviar mídias pelo Payload, os arquivos serão salvos no R2 e servidos por `https://<account>.r2.cloudflarestorage.com/<bucket>/<key>` (ou por custom domain se configurado).
+
+---
+
+## ✅ Deploy no Vercel
+
+- Crie o projeto no Vercel e conecte ao repositório `calu-dj-vintage`.
+- Defina as variáveis de ambiente citadas acima (Production + Preview).
+- O build padrão é `npm run build` (Next.js) — Vercel detecta automaticamente.
+
+---
+
+## 📄 Scripts úteis
+
+- `npm run dev` – desenvolvimento
+- `npm run build` – build de produção
+- `npm run start` – iniciar build localmente
+- `npm run generate:types` – gerar tipos do Payload
+
+---
+
+## 🧪 Testando uploads
+
+- Acesse o Admin do Payload e envie uma imagem/vídeo na coleção `Media`.
+- Verifique que o campo `url` do arquivo aponta para o endpoint do R2 e que o arquivo está acessível no browser.
+
+---
+
+## 📁 Arquivos importantes
+
+- `payload.config.ts` – configuração do Payload
+- `collections/Media.ts` – configurações de upload (adapter selecionável: R2/S3)
+- `lib/r2Adapter.ts` – adapter R2
+- `.env.example` – variáveis de ambiente de exemplo
+
+---
+
+## 🤝 Contribuição
+
+Contribuições são bem-vindas! Abra issues ou PRs com mudanças pequenas e descreva o propósito.
+
+---
+
+
+
