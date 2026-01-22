@@ -24,8 +24,11 @@ async function serverFunction(payload: { name: string; args?: any }) {
   })
 }
 
+// Clone/config without functions so it can be serialized to client components
+const safeConfig = JSON.parse(JSON.stringify(config))
+
 const Layout = ({ children }: Args) => (
-  <RootLayout config={config} importMap={importMap} serverFunction={serverFunction}>
+  <RootLayout config={safeConfig} importMap={importMap} serverFunction={serverFunction}>
     {children}
   </RootLayout>
 )

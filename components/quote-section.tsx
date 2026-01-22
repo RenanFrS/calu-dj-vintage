@@ -37,7 +37,7 @@ export function QuoteSection() {
               <div className="absolute top-0 left-0 w-20 h-20 border-t-2 border-l-2 border-white/30 rounded-tl-2xl" />
               <div className="absolute bottom-0 right-0 w-20 h-20 border-b-2 border-r-2 border-white/30 rounded-br-2xl" />
               
-              <div className="space-y-8">
+              <div className="space-y-8 text-center">
                 {/* Description */}
                 <p className="text-center text-lg md:text-xl text-white/90 leading-relaxed">
                   Interessado em ter DJ Calu no seu evento?<br />
@@ -67,25 +67,22 @@ export function QuoteSection() {
                     href="mailto:djcaludj@gmail.com" 
                     className="group/btn"
                   >
-                    <Button 
+                   {/*  <Button 
                       size="lg" 
                       variant="outline"
                       className="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white border-white/30 hover:border-white/50 shadow-lg hover:shadow-xl transition-all duration-300 group-hover/btn:scale-105 backdrop-blur-sm"
                     >
                       <Mail className="w-5 h-5 mr-2" />
                       Enviar e-mail
-                    </Button>
+                    </Button> */}
                   </a>
                 </div>
 
                 {/* Divider */}
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-white/20" />
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-4 text-white/60 bg-transparent">ou</span>
-                  </div>
+                <div className="flex items-center">
+                  <div className="flex-1 h-px bg-white/20" />
+                  <span className="px-4 text-white/60 text-sm">ou</span>
+                  <div className="flex-1 h-px bg-white/20" />
                 </div>
 
                 {/* Email */}
@@ -111,11 +108,6 @@ export function QuoteSection() {
               </div>
             </div>
           </div>
-
-          {/* Bottom text */}
-          <p className="text-center text-white/60 text-sm mt-8 italic">
-            Resposta em até 24 horas
-          </p>
         </div>
       </div>
     </section>

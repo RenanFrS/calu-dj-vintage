@@ -63,12 +63,14 @@ export function LatestTracks({ sets }: LatestTracksProps) {
   
   // Mapear tracks para o formato esperado pelo carousel
   const carouselImages = tracks.map(t => {
-    const customThumbnail = getMediaUrl(t.thumbnail)
-    const thumbnailSrc = customThumbnail || (t.videoId ? `https://img.youtube.com/vi/${t.videoId}/hqdefault.jpg` : '')
+    // Nem todos os elementos em `tracks` possuem `thumbnail` (fallback data), então verificamos antes de usar
+    const customThumbnail = 'thumbnail' in t ? getMediaUrl((t as Set).thumbnail) : null
+    const thumbnailSrc = customThumbnail || (('videoId' in t && t.videoId) ? `https://img.youtube.com/vi/${(t as any).videoId}/hqdefault.jpg` : '')
+
     return {
       src: thumbnailSrc,
       alt: t.title,
-      videoId: t.videoId || '',
+      videoId: 'videoId' in t ? t.videoId || '' : '',
     }
   })
 
