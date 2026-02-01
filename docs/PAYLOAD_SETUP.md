@@ -76,7 +76,7 @@ Crie um arquivo `.env.local` na raiz do projeto:
 
 ```env
 # PayloadCMS - MUDE ESTA CHAVE EM PRODUÇÃO!
-PAYLOAD_SECRET=sua-chave-secreta-muito-longa-e-aleatoria
+SECRET_SALT=sua-chave-secreta-muito-longa-e-aleatoria
 
 # MongoDB
 MONGODB_URI=mongodb+srv://usuario:senha@cluster.mongodb.net/caludj
@@ -85,7 +85,7 @@ MONGODB_URI=mongodb+srv://usuario:senha@cluster.mongodb.net/caludj
 NEXT_PUBLIC_SERVER_URL=https://seu-dominio.com
 ```
 
-### Gerando um PAYLOAD_SECRET Seguro
+### Gerando um SECRET_SALT Seguro
 
 ```bash
 # No terminal
@@ -126,7 +126,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 2. **Configure as variáveis de ambiente:**
    No painel do Vercel, adicione:
-   - `PAYLOAD_SECRET` (sua chave secreta)
+   - `SECRET_SALT` (sua chave secreta)
    - `MONGODB_URI` (string do MongoDB Atlas)
    - `NEXT_PUBLIC_SERVER_URL` (URL do seu site)
 
@@ -231,7 +231,7 @@ npm run generate:types
 
 ### Erro 500 no Admin
 
-- Verifique se `PAYLOAD_SECRET` está definido
+- Verifique se `SECRET_SALT` está definido
 - Confirme que o MongoDB está rodando
 
 ### Imagens não carregam

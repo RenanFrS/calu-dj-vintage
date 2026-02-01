@@ -65,7 +65,7 @@ No Vercel, abra o projeto → **Settings** → **Environment Variables** e adici
 - `R2_ACCOUNT_ID` ou `R2_ENDPOINT` (opcional)
 - `R2_FOLDER` (opcional, ex.: `media`)
 - `MONGODB_URI`
-- `PAYLOAD_SECRET`
+- `SECRET_SALT`
 - `NEXT_PUBLIC_SERVER_URL` (ex.: `https://seu-site.vercel.app`)
 
 Depois de adicionar, crie um novo deploy (Vercel rebuild) para que as variáveis entrem em vigor.

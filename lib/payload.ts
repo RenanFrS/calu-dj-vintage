@@ -1,8 +1,8 @@
-import { getPayload as getPayloadClient } from 'payload'
-import config from '@payload-config'
+import { getPayload as getPayloadServer } from 'payload'
 
 export const getPayload = async () => {
-  return getPayloadClient({ config })
+  const { default: config } = await import('../payload.config')
+  return getPayloadServer({ config })
 }
 
 // Funções auxiliares para buscar dados

@@ -34,7 +34,7 @@ Abra http://localhost:3000 e acesse o Payload Admin para testar uploads.
 Defina no seu ambiente local e no Vercel (Production + Preview):
 
 - `MONGODB_URI` - conexão MongoDB Atlas
-- `PAYLOAD_SECRET` - segredo do Payload
+- `SECRET_SALT` - segredo do Payload
 - `NEXT_PUBLIC_SERVER_URL` - URL do site (ex.: `https://seu-site.vercel.app`)
 
 Cloudflare R2 (recomendado):
