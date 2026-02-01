@@ -126,9 +126,6 @@ export default function HomeClient({
           <div className="absolute inset-0 bg-black opacity-40 pointer-events-none border-0" />
         </div>
 
-        {/* Small, non-interactive overlay to mask the external player's "Ativar som" UI */}
-        <div aria-hidden="true" className={`${showContent ? 'block' : 'hidden'} fixed top-6 left-1/2 -translate-x-1/2 h-10 px-4 rounded-md bg-black pointer-events-none z-50`} />
-
         <main className="min-h-screen">
           <DJHero siteSettings={siteSettings} />
 
