@@ -14,63 +14,24 @@ import "swiper/css/effect-cards"
 import { cn } from "@/lib/utils"
 import type { Set } from "@/types/payload"
 import { getMediaUrl } from "@/types/payload"
+import { Card } from "@/components/ui/card"
 
 interface LatestTracksProps {
   sets?: Set[]
 }
 
-// Dados de fallback
-const fallbackTracks = [
-  {
-    id: '1',
-    title: "This is Brazil - Parte 2",
-    featuring: "#7",
-    platform: 'youtube' as const,
-    videoId: "0ieVBg5Nfj8",
-  },
-  {
-    id: '2',
-    title: "This is Brazil - Parte 1",
-    featuring: "#7",
-    platform: 'youtube' as const,
-    videoId: "k5RLN2iJVME",
-  },
-  {
-    id: '3',
-    title: "Pop BR e Brasilidades",
-    featuring: "DJ Set",
-    platform: 'youtube' as const,
-    videoId: "qlR-fSIGly4",
-  },
-  {
-    id: '4',
-    title: "This is Brazil",
-    featuring: "#5",
-    platform: 'youtube' as const,
-    videoId: "Uy-BYwtpPdY",
-  },
-  {
-    id: '5',
-    title: "This is Brazil",
-    featuring: "#4",
-    platform: 'youtube' as const,
-    videoId: "jUl5xpACh8c",
-  },
-]
-
 export function LatestTracks({ sets }: LatestTracksProps) {
-  const tracks = sets && sets.length > 0 ? sets : fallbackTracks
+  const tracks = sets || []
   
   // Mapear tracks para o formato esperado pelo carousel
   const carouselImages = tracks.map(t => {
-    // Nem todos os elementos em `tracks` possuem `thumbnail` (fallback data), então verificamos antes de usar
-    const customThumbnail = 'thumbnail' in t ? getMediaUrl((t as Set).thumbnail) : null
-    const thumbnailSrc = customThumbnail || (('videoId' in t && t.videoId) ? `https://img.youtube.com/vi/${(t as any).videoId}/hqdefault.jpg` : '')
+    const customThumbnail = getMediaUrl(t.thumbnail)
+    const thumbnailSrc = customThumbnail || (t.videoId ? `https://img.youtube.com/vi/${t.videoId}/hqdefault.jpg` : '')
 
     return {
       src: thumbnailSrc,
       alt: t.title,
-      videoId: 'videoId' in t ? t.videoId || '' : '',
+      videoId: t.videoId || '',
     }
   })
 
@@ -94,9 +55,18 @@ export function LatestTracks({ sets }: LatestTracksProps) {
           <p className="text-xl text-muted-foreground">{"Ouça meus sets mais recentes"}</p>
         </div>
 
-        <div className="flex justify-center px-8">
-          <Carousel_003 className="" images={carouselImages} showPagination loop autoplay />
-        </div>
+        {tracks.length === 0 ? (
+          <div className="max-w-md mx-auto">
+            <Card className="p-12 text-center border-2 border-dashed border-secondary/30 bg-card/50">
+              <p className="text-xl text-muted-foreground">Configure no seu painel de admin!</p>
+              <p className="text-sm text-muted-foreground mt-2">Adicione sets na coleção "Sets"</p>
+            </Card>
+          </div>
+        ) : (
+          <div className="flex justify-center px-8">
+            <Carousel_003 className="" images={carouselImages} showPagination loop autoplay />
+          </div>
+        )}
       </div>
     </section>
   )

@@ -2,34 +2,37 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { motion, MotionValue, useScroll, useTransform } from "framer-motion";
-
+import { Card } from "@/components/ui/card";
 
 // This file replaces the old Masonry with a Skiper-inspired parallax gallery.
 // It keeps the default export named `Masonry` so existing imports (in `app/page.tsx`) don't need changes.
 
-const images = [
-  "/images/lummi/img15.png",
-  "/images/lummi/img21.png",
-  "/images/lummi/img3.png",
-  "/images/lummi/img4.png",
-  "/images/lummi/img5.png",
-  "/images/lummi/img6.png",
-  "/images/lummi/img7.png",
-  "/images/lummi/img8.png",
-  "/images/lummi/img24.png",
-  "/images/lummi/img10.png",
-  "/images/lummi/img11.png",
-  "/images/lummi/img12.png",
-  "/images/lummi/img13.png",
-];
-
 type MasonryProps = React.HTMLAttributes<HTMLElement> & { images?: string[] };
 
 const Masonry: React.FC<MasonryProps> = ({ images: propImages, className, ...rest }) => {
+  const imgs = propImages || [];
+
+  // If no images, render fallback immediately (before any hooks that depend on DOM refs)
+  if (imgs.length === 0) {
+    return (
+      <section {...rest} className={`relative ${className ?? "py-12"}`}>
+        <div className="container mx-auto px-4">
+          <Card className="p-12 text-center border-2 border-dashed border-secondary/30 bg-card/50">
+            <p className="text-xl text-muted-foreground">Configure no seu painel de admin!</p>
+            <p className="text-sm text-muted-foreground mt-2">Adicione imagens na coleção "Gallery Images"</p>
+          </Card>
+        </div>
+      </section>
+    );
+  }
+
+  return <MasonryGallery images={imgs} className={className} {...rest} />;
+};
+
+// Separated component that safely uses scroll hooks (only rendered when images exist)
+const MasonryGallery: React.FC<MasonryProps & { images: string[] }> = ({ images: imgs, className, ...rest }) => {
   const gallery = useRef<HTMLDivElement | null>(null);
   const [dimension, setDimension] = useState({ width: 0, height: 0 });
-
-  const imgs = propImages ?? images;
 
   const { scrollYProgress } = useScroll({ target: gallery, offset: ["start end", "end start"] });
 
@@ -85,33 +88,33 @@ const Masonry: React.FC<MasonryProps> = ({ images: propImages, className, ...res
 
       {/* Mobile: two-column stacked rows (left small, right large). Desktop: Skiper parallax columns */}
       {dimension.width <= 768 ? (
-        <div ref={gallery} className="container mx-auto px-4 space-y-4">
-          {Array.from({ length: Math.ceil(imgs.length / 2) }).map((_, row) => {
-            const left = imgs[row * 2];
-            const right = imgs[row * 2 + 1];
-            return (
-              <div key={row} className="grid grid-cols-[1fr_2fr] gap-4 items-start">
-                {left ? <MobileImage src={left} small index={row * 2} /> : <div />}
-                {right ? <MobileImage src={right} large index={row * 2 + 1} /> : <div />}
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        <div ref={gallery} className="relative box-border flex h-[175vh] gap-[2vw] overflow-hidden bg-transparent p-[2vw]">
-          <Column images={[imgs[0], imgs[1], imgs[2]]} y={y} />
-          <Column images={[imgs[3], imgs[4], imgs[5]]} y={y2} />
-          <Column images={[imgs[6], imgs[7], imgs[8]]} y={y3} />
-          <Column images={[imgs[9], imgs[10], imgs[11]]} y={y4} />
-        </div>
-      )}
+            <div ref={gallery} className="container mx-auto px-4 space-y-4">
+              {Array.from({ length: Math.ceil(imgs.length / 2) }).map((_, row) => {
+                const left = imgs[row * 2];
+                const right = imgs[row * 2 + 1];
+                return (
+                  <div key={row} className="grid grid-cols-[1fr_2fr] gap-4 items-start">
+                    {left ? <MobileImage src={left} small index={row * 2} /> : <div />}
+                    {right ? <MobileImage src={right} large index={row * 2 + 1} /> : <div />}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div ref={gallery} className="relative box-border flex h-[175vh] gap-[2vw] overflow-hidden bg-transparent p-[2vw]">
+              <Column images={[imgs[0], imgs[1], imgs[2]]} y={y} />
+              <Column images={[imgs[3], imgs[4], imgs[5]]} y={y2} />
+              <Column images={[imgs[6], imgs[7], imgs[8]]} y={y3} />
+              <Column images={[imgs[9], imgs[10], imgs[11]]} y={y4} />
+            </div>
+          )}
 
-      <div className="font-geist relative flex items-center justify-center gap-2">
-        <div className="absolute left-1/2 top-[10%] grid -translate-x-1/2 content-start justify-items-center gap-6 text-center text-black">
-          <span className="relative max-w-[12ch] text-xs uppercase leading-tight opacity-40 after:absolute after:left-1/2 after:top-full after:h-16 after:w-px after:bg-linear-to-b after:from-white after:to-black after:content-['']">
-          </span>
+        <div className="font-geist relative flex items-center justify-center gap-2">
+          <div className="absolute left-1/2 top-[10%] grid -translate-x-1/2 content-start justify-items-center gap-6 text-center text-black">
+            <span className="relative max-w-[12ch] text-xs uppercase leading-tight opacity-40 after:absolute after:left-1/2 after:top-full after:h-16 after:w-px after:bg-linear-to-b after:from-white after:to-black after:content-['']">
+            </span>
+          </div>
         </div>
-      </div>
     </section>
   );
 };

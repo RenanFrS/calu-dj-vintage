@@ -19,18 +19,10 @@ const socialIcons: Record<string, React.ComponentType<{ className?: string }>> =
   email: Mail,
 }
 
-// Links padrão de fallback
-const defaultSocialLinks: SocialLink[] = [
-  { platform: 'instagram', url: '#', enabled: true },
-  { platform: 'youtube', url: '#', enabled: true },
-  { platform: 'spotify', url: '#', enabled: true },
-  { platform: 'email', url: 'mailto:contato@djcalu.com', enabled: true },
-]
-
 export function Footer({ siteSettings }: FooterProps) {
-  const socialLinks = siteSettings?.socialLinks?.filter(link => link.enabled !== false) || defaultSocialLinks
-  const tagline = siteSettings?.footerTagline || 'A pista como espaço de inclusão'
-  const copyright = siteSettings?.copyrightText || '© 2025 Calu DJ. Todos os direitos reservados.'
+  const socialLinks = siteSettings?.socialLinks?.filter(link => link.enabled !== false) || []
+  const tagline = siteSettings?.footerTagline || ''
+  const copyright = siteSettings?.copyrightText || ''
 
   return (
     <footer className="w-full border-t-4 border-secondary bg-card/50 backdrop-blur-sm">

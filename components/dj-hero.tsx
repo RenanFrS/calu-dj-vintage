@@ -21,21 +21,13 @@ const socialIcons: Record<string, React.ComponentType<{ className?: string }>> =
   tiktok: FaTiktok,
 }
 
-// Links de redes sociais padrão (fallback)
-const defaultSocialLinks: SocialLink[] = [
-  { platform: 'instagram', url: 'https://www.instagram.com/caluzete/', enabled: true },
-  { platform: 'youtube', url: 'https://youtube.com', enabled: true },
-  { platform: 'soundcloud', url: 'https://soundcloud.com/calu-zete', enabled: true },
-  { platform: 'spotify', url: 'https://open.spotify.com/intl-pt/artist/1kqlYPWo8aVtw8a7yovJgz?si=Wdfs7ca2TLeqYDWUAP8hug', enabled: true },
-]
-
 export function DJHero({ siteSettings }: DJHeroProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
 
-  // Usar links do Payload ou fallback
-  const socialLinks = (siteSettings?.socialLinks?.filter(link => link.enabled !== false) || defaultSocialLinks)
-  const logoUrl = getMediaUrl(siteSettings?.logo) || "/logo/logo-calu.png"
-  const logoAlt = siteSettings?.logoAlt || "Calu DJ Logo"
+  // Usar links do Payload (sem fallback)
+  const socialLinks = siteSettings?.socialLinks?.filter(link => link.enabled !== false) || []
+  const logoUrl = getMediaUrl(siteSettings?.logo)
+  const logoAlt = siteSettings?.logoAlt || "Logo"
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -90,14 +82,18 @@ export function DJHero({ siteSettings }: DJHeroProps) {
 
             {/* Logo */}
             <div className="flex-shrink-0">
-              <Image
-                src={logoUrl}
-                alt={logoAlt}
-                width={140}
-                height={44}
-                className="object-contain"
-                priority
-              />
+              {logoUrl ? (
+                <Image
+                  src={logoUrl}
+                  alt={logoAlt}
+                  width={140}
+                  height={44}
+                  className="object-contain"
+                  priority
+                />
+              ) : (
+                <span className="text-2xl font-bold text-white font-serif">DJ CALU</span>
+              )}
             </div>
 
             {/* Right - desktop icons + mobile menu button */}
@@ -144,17 +140,9 @@ export function DJHero({ siteSettings }: DJHeroProps) {
         </nav>
       </header>
 
-      {/* Hero-specific background video (place /public/video/hero.mp4) */}
+      {/* Background overlay */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none border-0">
-        <iframe
-          loading="eager"
-          src="https://player.vimeo.com/video/1150705874?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479&amp;autoplay=1&amp;muted=1&amp;loop=1"
-          title="Hero background video"
-          frameBorder="0"
-          allow="autoplay; fullscreen; picture-in-picture"
-          className="w-full h-full absolute inset-0"
-        />
-        <div className="absolute inset-0 bg-black/50 pointer-events-none border-0" />
+        <div className="absolute inset-0 bg-black/70 pointer-events-none border-0" />
       </div>
 
       {/* Content - simplified centered hero (header/nav kept) */}

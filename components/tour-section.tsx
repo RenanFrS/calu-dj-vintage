@@ -7,41 +7,6 @@ interface TourSectionProps {
   tours?: Tour[]
 }
 
-// Dados de fallback
-const fallbackShows: Tour[] = [
-  {
-    id: '1',
-    date: new Date('2025-12-25').toISOString(),
-    venue: "Tomorrowland Brasil",
-    location: "Itu, São Paulo",
-    status: "sold-out" as const,
-  },
-  {
-    id: '2',
-    date: new Date('2026-01-15').toISOString(),
-    venue: "Ultra Music Festival",
-    location: "Miami, USA",
-    status: "available" as const,
-    ticketUrl: "https://example.com/ultra-tickets",
-  },
-  {
-    id: '3',
-    date: new Date('2026-02-10').toISOString(),
-    venue: "Rock in Rio",
-    location: "Rio de Janeiro",
-    status: "available" as const,
-    ticketUrl: "https://example.com/rockinrio-tickets",
-  },
-  {
-    id: '4',
-    date: new Date('2026-03-05').toISOString(),
-    venue: "Lollapalooza",
-    location: "São Paulo",
-    status: "few-tickets" as const,
-    ticketUrl: "https://example.com/lolla-tickets",
-  },
-]
-
 // Helper para formatar a data
 function formatTourDate(dateString: string) {
   const date = new Date(dateString)
@@ -55,7 +20,7 @@ function formatTourDate(dateString: string) {
 }
 
 export function TourSection({ tours }: TourSectionProps) {
-  const shows = tours && tours.length > 0 ? tours : fallbackShows
+  const shows = tours || []
 
   return (
     <section id="tour" className="py-24 px-4 relative overflow-hidden bg-card/30">
@@ -75,7 +40,13 @@ export function TourSection({ tours }: TourSectionProps) {
         </div>
 
         <div className="max-w-4xl mx-auto space-y-4 px-4">
-          {shows.map((show, index) => {
+          {shows.length === 0 ? (
+            <Card className="p-12 text-center border-2 border-dashed border-secondary/30 bg-background/80">
+              <p className="text-xl text-muted-foreground">Configure no seu painel de admin!</p>
+              <p className="text-sm text-muted-foreground mt-2">Adicione shows na coleção "Tours"</p>
+            </Card>
+          ) : (
+            shows.map((show, index) => {
             const dateInfo = formatTourDate(show.date)
             return (
             <Card
@@ -132,7 +103,8 @@ export function TourSection({ tours }: TourSectionProps) {
                 </div>
               </div>
             </Card>
-          )})}
+          )})
+          )}
         </div>
         </div>
 

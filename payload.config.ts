@@ -4,7 +4,6 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
-import { pt } from '@payloadcms/translations/languages/pt'
 import { s3Storage } from '@payloadcms/storage-s3'
 
 import { Users } from './collections/Users'
@@ -57,11 +56,6 @@ export default buildConfig({
       },
     }),
   ],
-
-  i18n: {
-    supportedLanguages: { pt },
-    fallbackLanguage: 'pt',
-  },
 
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
