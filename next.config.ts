@@ -12,6 +12,11 @@ const nextConfig: NextConfig = {
   experimental: {
     reactCompiler: false,
   },
+  // Silencia avisos de deprecação do Sass @import (usados pelo Payload CMS)
+  sassOptions: {
+    silenceDeprecations: ['legacy-js-api', 'import'],
+    quietDeps: true,
+  },
   images: {
     remotePatterns: [
       {
