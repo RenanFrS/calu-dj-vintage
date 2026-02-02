@@ -7,6 +7,8 @@ import Image from "next/image"
 import { useState, useEffect } from "react"
 import type { SiteSettings, SocialLink } from "@/types/payload"
 import { getMediaUrl } from "@/types/payload"
+import { LanguageSwitcher } from "@/components/language-switcher"
+import { useI18n } from "@/lib/i18n-context"
 
 interface DJHeroProps {
   siteSettings?: SiteSettings | null
@@ -23,6 +25,7 @@ const socialIcons: Record<string, React.ComponentType<{ className?: string }>> =
 
 export function DJHero({ siteSettings }: DJHeroProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { t } = useI18n()
 
   // Usar links do Payload (sem fallback)
   const socialLinks = siteSettings?.socialLinks?.filter(link => link.enabled !== false) || []
@@ -67,16 +70,16 @@ export function DJHero({ siteSettings }: DJHeroProps) {
             {/* Left - desktop links */}
             <div className="hidden md:flex gap-4 items-center">
               <a href="#music" className="text-foreground hover:text-primary transition-colors font-medium uppercase text-sm tracking-wider focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white hover:ring-2 hover:ring-white hover:ring-offset-2 cursor-pointer px-3 py-2 rounded">
-                {"Música"}
+                {t("nav.music")}
               </a>
               <a href="#tour" className="text-foreground hover:text-primary transition-colors font-medium uppercase text-sm tracking-wider focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white hover:ring-2 hover:ring-white hover:ring-offset-2 cursor-pointer px-3 py-2 rounded">
-                {"Agenda"}
+                {t("nav.schedule")}
               </a>
               <a href="#about" className="text-foreground hover:text-primary transition-colors font-medium uppercase text-sm tracking-wider focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white hover:ring-2 hover:ring-white hover:ring-offset-2 cursor-pointer px-3 py-2 rounded">
-                {"Sobre"}
+                {t("nav.about")}
               </a>
               <a href="#contact" className="text-foreground hover:text-primary transition-colors font-medium uppercase text-sm tracking-wider focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white hover:ring-2 hover:ring-white hover:ring-offset-2 cursor-pointer px-3 py-2 rounded">
-                {"Contato"}
+                {t("nav.contact")}
               </a>
             </div>
 
@@ -96,7 +99,7 @@ export function DJHero({ siteSettings }: DJHeroProps) {
               )}
             </div>
 
-            {/* Right - desktop icons + mobile menu button */}
+            {/* Right - desktop icons + language flags + mobile menu button */}
             <div className="flex items-center gap-3">
               <div className="hidden md:flex gap-3 items-center">
                 {socialLinks.map((link, index) => {
@@ -117,6 +120,9 @@ export function DJHero({ siteSettings }: DJHeroProps) {
                 })}
               </div>
 
+              {/* Language Switcher Flags - after social icons */}
+              <LanguageSwitcher />
+
               <button
                 className="md:hidden text-foreground p-2 rounded focus-visible:ring-2 focus-visible:ring-white hover:ring-2 hover:ring-white hover:ring-offset-2"
                 onClick={() => setMobileOpen((s) => !s)}
@@ -131,10 +137,10 @@ export function DJHero({ siteSettings }: DJHeroProps) {
           {/* Mobile menu */}
           {mobileOpen && (
             <div className="md:hidden mt-3 bg-primary/10 backdrop-blur-sm rounded-md p-3 space-y-2 shadow-lg">
-              <a href="#music" onClick={() => setMobileOpen(false)} className="block text-foreground hover:text-primary px-3 py-2 rounded focus-visible:ring-2 focus-visible:ring-white">Música</a>
-              <a href="#tour" onClick={() => setMobileOpen(false)} className="block text-foreground hover:text-primary px-3 py-2 rounded focus-visible:ring-2 focus-visible:ring-white">Agenda</a>
-              <a href="#about" onClick={() => setMobileOpen(false)} className="block text-foreground hover:text-primary px-3 py-2 rounded focus-visible:ring-2 focus-visible:ring-white">Sobre</a>
-              <a href="#contact" onClick={() => setMobileOpen(false)} className="block text-foreground hover:text-primary px-3 py-2 rounded focus-visible:ring-2 focus-visible:ring-white">Contato</a>
+              <a href="#music" onClick={() => setMobileOpen(false)} className="block text-foreground hover:text-primary px-3 py-2 rounded focus-visible:ring-2 focus-visible:ring-white">{t("nav.music")}</a>
+              <a href="#tour" onClick={() => setMobileOpen(false)} className="block text-foreground hover:text-primary px-3 py-2 rounded focus-visible:ring-2 focus-visible:ring-white">{t("nav.schedule")}</a>
+              <a href="#about" onClick={() => setMobileOpen(false)} className="block text-foreground hover:text-primary px-3 py-2 rounded focus-visible:ring-2 focus-visible:ring-white">{t("nav.about")}</a>
+              <a href="#contact" onClick={() => setMobileOpen(false)} className="block text-foreground hover:text-primary px-3 py-2 rounded focus-visible:ring-2 focus-visible:ring-white">{t("nav.contact")}</a>
             </div>
           )}
         </nav>
@@ -148,7 +154,7 @@ export function DJHero({ siteSettings }: DJHeroProps) {
       {/* Content - simplified centered hero (header/nav kept) */}
       <div className="relative z-30 w-full flex items-center justify-center min-h-screen">
         <div className="text-center px-6 py-32">
-          <h2 className="!text-[24px] md:!text-[24px] uppercase tracking-wider text-white opacity-80">Você está ouvindo</h2>
+          <h2 className="!text-[24px] md:!text-[24px] uppercase tracking-wider text-white opacity-80">{t("hero.listening")}</h2>
           <h1 className="mt-4 text-6xl md:text-8xl lg:text-9xl font-serif font-bold text-white">DJ CALU</h1>
         </div>
       </div>

@@ -13,6 +13,7 @@ import { NewsletterSection } from "@/components/newsletter-section"
 import { Footer } from "@/components/footer"
 import { Heart } from "lucide-react"
 import { getMediaUrl } from "@/types/payload"
+import { I18nProvider } from "@/lib/i18n-context"
 import type { SiteSettings, About, Tour, Set, GalleryImage } from "@/types/payload"
 
 interface HomeClientProps {
@@ -58,7 +59,7 @@ export default function HomeClient({
   }
 
   return (
-    <>
+    <I18nProvider>
       {loading && <VinylPreloader onComplete={handleLoadingComplete} />}
 
       <div className={`${showContent ? "opacity-100" : "opacity-0"}`}>
@@ -198,6 +199,6 @@ export default function HomeClient({
         </main>
         <Footer siteSettings={siteSettings} />
       </div>
-    </>
+    </I18nProvider>
   )
 }
