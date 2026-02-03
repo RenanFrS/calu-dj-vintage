@@ -1,8 +1,6 @@
 import { buildConfig } from 'payload'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import { pt } from '@payloadcms/translations/languages/pt'
-import { en } from '@payloadcms/translations/languages/en'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
@@ -23,11 +21,6 @@ const dirname = path.dirname(filename)
 export default buildConfig({
   secret: process.env.SECRET_SALT || 'dev-secret',
 
-  i18n: {
-    supportedLanguages: { pt, en },
-    fallbackLanguage: 'pt',
-  },
-
   admin: {
     user: Users.slug,
     importMap: {
@@ -35,6 +28,16 @@ export default buildConfig({
     },
     meta: {
       titleSuffix: ' - Calu DJ',
+      icons: [{ url: '/logo/logo-calu.png' }],
+      openGraph: {
+        images: [{ url: '/logo/logo-calu.png' }],
+      },
+    },
+    components: {
+      graphics: {
+        Logo: '/components/admin/Logo',
+        Icon: '/components/admin/Icon',
+      },
     },
   },
 
