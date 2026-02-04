@@ -19,6 +19,7 @@ export interface Media {
 
 export interface Tour {
   id: string
+  eventImage?: Media | string
   date: string
   venue: string
   location: string
@@ -62,11 +63,10 @@ export interface SiteSettings {
   heroBackgroundDesktop?: Media | string
   heroBackgroundMobile?: Media | string
   heroOverlayOpacity?: number
-  // Background Seções
-  quoteSectionBackgroundDesktop?: Media | string
-  quoteSectionBackgroundMobile?: Media | string
-  spotifySectionBackgroundDesktop?: Media | string
-  spotifySectionBackgroundMobile?: Media | string
+  // Background Seções (unificado para todas as seções abaixo do hero)
+  sectionsBackgroundDesktop?: Media | string
+  sectionsBackgroundMobile?: Media | string
+  sectionsOverlayOpacity?: number
   // Social Links
   socialLinks?: SocialLink[]
   // Textos

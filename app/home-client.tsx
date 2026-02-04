@@ -43,13 +43,10 @@ export default function HomeClient({
   const heroMobileMedia = toMediaSource(siteSettings?.heroBackgroundMobile as Media | string | undefined)
   const heroOverlayOpacity = siteSettings?.heroOverlayOpacity ?? 40
 
-  // Preparar mídias do background quote section
-  const quoteDesktopMedia = toMediaSource(siteSettings?.quoteSectionBackgroundDesktop as Media | string | undefined)
-  const quoteMobileMedia = toMediaSource(siteSettings?.quoteSectionBackgroundMobile as Media | string | undefined)
-
-  // Preparar mídias do background spotify section
-  const spotifyDesktopMedia = toMediaSource(siteSettings?.spotifySectionBackgroundDesktop as Media | string | undefined)
-  const spotifyMobileMedia = toMediaSource(siteSettings?.spotifySectionBackgroundMobile as Media | string | undefined)
+  // Preparar mídias do background das seções (unificado)
+  const sectionsDesktopMedia = toMediaSource(siteSettings?.sectionsBackgroundDesktop as Media | string | undefined)
+  const sectionsMobileMedia = toMediaSource(siteSettings?.sectionsBackgroundMobile as Media | string | undefined)
+  const sectionsOverlayOpacity = siteSettings?.sectionsOverlayOpacity ?? 60
 
   // Safety fallback: in case preloader gets stuck for any reason, remove it after 8s
   useEffect(() => {
@@ -82,8 +79,20 @@ export default function HomeClient({
         <main className="min-h-screen">
           <DJHero siteSettings={siteSettings} />
 
+          {/* Container com background unificado para seções abaixo do hero */}
+          <div className="relative">
+            {/* Background fixo das seções */}
+            {(sectionsDesktopMedia || sectionsMobileMedia) && (
+              <DynamicBackground
+                desktopMedia={sectionsDesktopMedia}
+                mobileMedia={sectionsMobileMedia}
+                overlayOpacity={sectionsOverlayOpacity}
+                className="!fixed"
+              />
+            )}
+
           {/* Quem sou */}
-          <section id="about" className="py-20">
+          <section id="about" className="py-20 relative z-10">
             <div className="container mx-auto px-6">
               {about ? (
                 <>
@@ -145,14 +154,10 @@ export default function HomeClient({
 
           <TourSection tours={tours} />
           <LatestTracks sets={sets} />
-          <SpotifySection 
-            desktopMedia={spotifyDesktopMedia}
-            mobileMedia={spotifyMobileMedia}
-          />
-          <QuoteSection 
-            desktopMedia={quoteDesktopMedia}
-            mobileMedia={quoteMobileMedia}
-          />
+          <SpotifySection />
+          <QuoteSection />
+
+          </div>{/* Fim do container com background das seções */}
 
         </main>
         <Footer siteSettings={siteSettings} />

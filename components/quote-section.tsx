@@ -1,100 +1,11 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import Image from 'next/image'
 import { Instagram, Mail } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
-interface MediaSource {
-  url: string
-  mimeType?: string
-}
-
-interface QuoteSectionProps {
-  desktopMedia?: MediaSource | null
-  mobileMedia?: MediaSource | null
-}
-
-// Detecta se a mídia é um vídeo
-function isVideo(media: MediaSource | null | undefined): boolean {
-  if (!media?.url) return false
-  const videoMimeTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime', 'video/mov']
-  if (media.mimeType && videoMimeTypes.includes(media.mimeType)) return true
-  const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.m4v']
-  return videoExtensions.some(ext => media.url.toLowerCase().includes(ext))
-}
-
-function VideoBackground({ src }: { src: string }) {
-  const videoRef = useRef<HTMLVideoElement>(null)
-
-  useEffect(() => {
-    const video = videoRef.current
-    if (!video) return
-    const playVideo = async () => {
-      try {
-        video.muted = true
-        video.playsInline = true
-        await video.play()
-      } catch (error) {
-        console.warn('Autoplay bloqueado:', error)
-      }
-    }
-    playVideo()
-  }, [src])
-
-  return (
-    <video
-      ref={videoRef}
-      autoPlay
-      loop
-      muted
-      playsInline
-      preload="auto"
-      className="w-full h-full object-cover"
-      style={{ pointerEvents: 'none' }}
-    >
-      <source src={src} type="video/mp4" />
-      <source src={src} type="video/webm" />
-    </video>
-  )
-}
-
-export function QuoteSection({ desktopMedia, mobileMedia }: QuoteSectionProps) {
-  const mobileSource = mobileMedia?.url ? mobileMedia : desktopMedia
-  const hasBackground = desktopMedia?.url || mobileSource?.url
-
-  const renderMedia = (media: MediaSource | null | undefined, visibilityClass: string) => {
-    if (!media?.url) return null
-    if (isVideo(media)) {
-      return (
-        <div className={`absolute inset-0 ${visibilityClass}`}>
-          <VideoBackground src={media.url} />
-        </div>
-      )
-    }
-    return (
-      <div className={`absolute inset-0 ${visibilityClass}`}>
-        <Image
-          src={media.url}
-          alt="Background"
-          fill
-          className="object-cover"
-          unoptimized={media.url.toLowerCase().includes('.gif')}
-        />
-      </div>
-    )
-  }
-
+export function QuoteSection() {
   return (
     <section className="relative w-full py-20 md:py-32 overflow-hidden">
-      {/* Background dinâmico */}
-      {hasBackground && (
-        <div className="absolute inset-0 z-0">
-          {renderMedia(desktopMedia, 'hidden md:block')}
-          {renderMedia(mobileSource, 'md:hidden')}
-        </div>
-      )}
-      
       {/* Background gradient */}
       <div className="absolute inset-0 z-[1] bg-gradient-to-b from-black/60 via-black/40 to-black/60" />
       
@@ -149,21 +60,6 @@ export function QuoteSection({ desktopMedia, mobileMedia }: QuoteSectionProps) {
                       <Instagram className="w-5 h-5 mr-2" />
                       Mande uma mensagem
                     </Button>
-                  </a>
-
-                  {/* WhatsApp Button (optional - you can customize or remove) */}
-                  <a 
-                    href="mailto:djcaludj@gmail.com" 
-                    className="group/btn"
-                  >
-                   {/*  <Button 
-                      size="lg" 
-                      variant="outline"
-                      className="w-full sm:w-auto bg-white/10 hover:bg-white/20 text-white border-white/30 hover:border-white/50 shadow-lg hover:shadow-xl transition-all duration-300 group-hover/btn:scale-105 backdrop-blur-sm"
-                    >
-                      <Mail className="w-5 h-5 mr-2" />
-                      Enviar e-mail
-                    </Button> */}
                   </a>
                 </div>
 

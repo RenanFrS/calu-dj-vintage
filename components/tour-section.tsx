@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Calendar, MapPin, Ticket } from "lucide-react"
-import type { Tour } from "@/types/payload"
+import Image from "next/image"
+import type { Tour, Media } from "@/types/payload"
+import { getMediaUrl } from "@/types/payload"
 
 interface TourSectionProps {
   tours?: Tour[]
@@ -48,57 +50,72 @@ export function TourSection({ tours }: TourSectionProps) {
           ) : (
             shows.map((show, index) => {
             const dateInfo = formatTourDate(show.date)
+            const eventImageUrl = getMediaUrl(show.eventImage as Media | string | undefined)
             return (
             <Card
               key={show.id || index}
               className="overflow-hidden border-2 border-secondary/30 bg-background/80 backdrop-blur-sm hover:border-primary transition-all duration-300 shadow-lg"
             >
-              <div className="p-6">
-                <div className="grid sm:grid-cols-[auto_1fr_auto] gap-6 items-center">
-                  <div className="text-center border-2 border-secondary rounded-lg p-3 bg-card">
-                    <div className="text-3xl font-bold text-secondary font-serif">{dateInfo.formatted}</div>
-                    <div className="text-sm text-muted-foreground uppercase tracking-wide">{dateInfo.day}</div>
+              <div className="flex flex-col sm:flex-row">
+                {/* Cartaz/Imagem do Evento */}
+                {eventImageUrl && (
+                  <div className="relative w-full sm:w-48 h-48 sm:h-auto flex-shrink-0">
+                    <Image
+                      src={eventImageUrl}
+                      alt={show.venue || "Evento"}
+                      fill
+                      className="object-cover"
+                    />
                   </div>
-
-                  {/* Venue info */}
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-bold text-foreground font-serif">{show.venue}</h3>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <MapPin className="h-4 w-4" />
-                      <span>{show.location}</span>
+                )}
+                
+                <div className="flex-1 p-6">
+                  <div className="grid sm:grid-cols-[auto_1fr_auto] gap-6 items-center">
+                    <div className="text-center border-2 border-secondary rounded-lg p-3 bg-card">
+                      <div className="text-3xl font-bold text-secondary font-serif">{dateInfo.formatted}</div>
+                      <div className="text-sm text-muted-foreground uppercase tracking-wide">{dateInfo.day}</div>
                     </div>
-                  </div>
 
-                  <div>
-                    {show.status === "sold-out" ? (
-                      <Button
-                        disabled
-                        variant="outline"
-                        className="w-full sm:w-auto bg-muted text-muted-foreground border-2"
-                      >
-                        {"Esgotado"}
-                      </Button>
-                    ) : (
-                      <Button 
-                        asChild={!!show.ticketUrl}
-                        className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground border-2 border-secondary shadow-lg"
-                      >
-                        {show.ticketUrl ? (
-                          <a href={show.ticketUrl} target="_blank" rel="noopener noreferrer">
-                            <Ticket className="mr-2 h-4 w-4" />
-                            {"Ingressos"}
-                          </a>
-                        ) : (
-                          <>
-                            <Ticket className="mr-2 h-4 w-4" />
-                            {"Ingressos"}
-                          </>
-                        )}
-                      </Button>
-                    )}
-                    {show.status === "few-tickets" && (
-                      <p className="text-xs text-secondary font-bold mt-1 text-center">{"Últimos ingressos!"}</p>
-                    )}
+                    {/* Venue info */}
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-bold text-foreground font-serif">{show.venue}</h3>
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <MapPin className="h-4 w-4" />
+                        <span>{show.location}</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      {show.status === "sold-out" ? (
+                        <Button
+                          disabled
+                          variant="outline"
+                          className="w-full sm:w-auto bg-muted text-muted-foreground border-2"
+                        >
+                          {"Esgotado"}
+                        </Button>
+                      ) : (
+                        <Button 
+                          asChild={!!show.ticketUrl}
+                          className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground border-2 border-secondary shadow-lg"
+                        >
+                          {show.ticketUrl ? (
+                            <a href={show.ticketUrl} target="_blank" rel="noopener noreferrer">
+                              <Ticket className="mr-2 h-4 w-4" />
+                              {"Ingressos"}
+                            </a>
+                          ) : (
+                            <>
+                              <Ticket className="mr-2 h-4 w-4" />
+                              {"Ingressos"}
+                            </>
+                          )}
+                        </Button>
+                      )}
+                      {show.status === "few-tickets" && (
+                        <p className="text-xs text-secondary font-bold mt-1 text-center">{"Últimos ingressos!"}</p>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

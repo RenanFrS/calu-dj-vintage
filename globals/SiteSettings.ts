@@ -64,42 +64,35 @@ export const SiteSettings: GlobalConfig = {
         },
         {
           label: 'Background Seções',
-          description: 'Configure backgrounds para outras seções do site',
+          description: 'Configure o background para todas as seções abaixo do hero',
           fields: [
             {
-              name: 'quoteSectionBackgroundDesktop',
+              name: 'sectionsBackgroundDesktop',
               type: 'upload',
               relationTo: 'media',
-              label: 'Background Seção Orçamento - Desktop',
+              label: 'Background Seções - Desktop',
               admin: {
-                description: 'Aceita: Imagem (JPG, PNG, WebP), GIF animado ou Vídeo (MP4, WebM)',
+                description: 'Aceita: Imagem (JPG, PNG, WebP), GIF animado ou Vídeo (MP4, WebM). Este background será usado em todas as seções abaixo do hero.',
               },
             },
             {
-              name: 'quoteSectionBackgroundMobile',
+              name: 'sectionsBackgroundMobile',
               type: 'upload',
               relationTo: 'media',
-              label: 'Background Seção Orçamento - Mobile',
+              label: 'Background Seções - Mobile',
               admin: {
                 description: 'Se vazio, usa o desktop',
               },
             },
             {
-              name: 'spotifySectionBackgroundDesktop',
-              type: 'upload',
-              relationTo: 'media',
-              label: 'Background Seção Spotify - Desktop',
+              name: 'sectionsOverlayOpacity',
+              type: 'number',
+              label: 'Opacidade do overlay escuro (%)',
+              defaultValue: 60,
+              min: 0,
+              max: 100,
               admin: {
-                description: 'Aceita: Imagem (JPG, PNG, WebP), GIF animado ou Vídeo (MP4, WebM)',
-              },
-            },
-            {
-              name: 'spotifySectionBackgroundMobile',
-              type: 'upload',
-              relationTo: 'media',
-              label: 'Background Seção Spotify - Mobile',
-              admin: {
-                description: 'Se vazio, usa o desktop',
+                description: 'Controla o escurecimento sobre o background das seções',
               },
             },
           ],

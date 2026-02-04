@@ -11,6 +11,15 @@ export const Tours: CollectionConfig = {
   },
   fields: [
     {
+      name: 'eventImage',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Cartaz/Imagem do Evento',
+      admin: {
+        description: 'Imagem ou cartaz do evento. Será exibido no card do show.',
+      },
+    },
+    {
       name: 'date',
       type: 'date',
       label: 'Data do Show',
