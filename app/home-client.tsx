@@ -11,10 +11,11 @@ import { QuoteSection } from "@/components/quote-section"
 import { TourSection } from "@/components/tour-section"
 import { NewsletterSection } from "@/components/newsletter-section"
 import { Footer } from "@/components/footer"
+import { DynamicBackground, toMediaSource } from "@/components/dynamic-background"
 import { Heart } from "lucide-react"
 import { getMediaUrl } from "@/types/payload"
 import { I18nProvider } from "@/lib/i18n-context"
-import type { SiteSettings, About, Tour, Set, GalleryImage } from "@/types/payload"
+import type { SiteSettings, About, Tour, Set, GalleryImage, Media } from "@/types/payload"
 
 interface HomeClientProps {
   siteSettings: SiteSettings | null
@@ -37,10 +38,18 @@ export default function HomeClient({
   // Processar imagens da galeria (somente do Payload)
   const processedGalleryImages = galleryImages.map(img => getMediaUrl(img.image) || '').filter(Boolean)
 
-  // Processar background do hero (somente do Payload)
-  const heroBackgroundDesktop = getMediaUrl(siteSettings?.heroBackgroundDesktop)
-  const heroBackgroundMobile = getMediaUrl(siteSettings?.heroBackgroundMobile) || heroBackgroundDesktop
-  const useVideoBackground = siteSettings?.useVideoBackground !== false
+  // Preparar mídias do background hero
+  const heroDesktopMedia = toMediaSource(siteSettings?.heroBackgroundDesktop as Media | string | undefined)
+  const heroMobileMedia = toMediaSource(siteSettings?.heroBackgroundMobile as Media | string | undefined)
+  const heroOverlayOpacity = siteSettings?.heroOverlayOpacity ?? 40
+
+  // Preparar mídias do background quote section
+  const quoteDesktopMedia = toMediaSource(siteSettings?.quoteSectionBackgroundDesktop as Media | string | undefined)
+  const quoteMobileMedia = toMediaSource(siteSettings?.quoteSectionBackgroundMobile as Media | string | undefined)
+
+  // Preparar mídias do background spotify section
+  const spotifyDesktopMedia = toMediaSource(siteSettings?.spotifySectionBackgroundDesktop as Media | string | undefined)
+  const spotifyMobileMedia = toMediaSource(siteSettings?.spotifySectionBackgroundMobile as Media | string | undefined)
 
   // Safety fallback: in case preloader gets stuck for any reason, remove it after 8s
   useEffect(() => {
@@ -63,69 +72,12 @@ export default function HomeClient({
       {loading && <VinylPreloader onComplete={handleLoadingComplete} />}
 
       <div className={`${showContent ? "opacity-100" : "opacity-0"}`}>
-        {/* Background video/image (under the hero) */}
-        <div className="fixed inset-0 -z-20 overflow-hidden pointer-events-none border-0">
-          {heroBackgroundDesktop ? (
-            useVideoBackground ? (
-              <>
-                {/* Desktop */}
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="hidden md:block w-full h-full absolute inset-0 object-cover"
-                  style={{ pointerEvents: 'none' }} 
-                >
-                  <source 
-                    src={heroBackgroundDesktop} 
-                    type="video/mp4" 
-                  />
-                </video>
-                {/* Mobile */}
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="md:hidden w-full h-full absolute inset-0 object-cover"
-                  style={{ pointerEvents: 'none' }} 
-                >
-                  <source 
-                    src={heroBackgroundMobile || heroBackgroundDesktop} 
-                    type="video/mp4" 
-                  />
-                </video>
-              </>
-            ) : (
-              <>
-                {/* Desktop image */}
-                <div className="hidden md:block absolute inset-0">
-                  <Image 
-                    src={heroBackgroundDesktop} 
-                    alt="Background"
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                </div>
-                {/* Mobile image */}
-                <div className="md:hidden absolute inset-0">
-                  <Image 
-                    src={heroBackgroundMobile || heroBackgroundDesktop} 
-                    alt="Background"
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                </div>
-              </>
-            )
-          ) : (
-            <div className="absolute inset-0 bg-gradient-to-b from-gray-900 to-black" />
-          )}
-          <div className="absolute inset-0 bg-black opacity-40 pointer-events-none border-0" />
-        </div>
+        {/* Background dinâmico do Hero (suporta imagem, GIF e vídeo) */}
+        <DynamicBackground
+          desktopMedia={heroDesktopMedia}
+          mobileMedia={heroMobileMedia}
+          overlayOpacity={heroOverlayOpacity}
+        />
 
         <main className="min-h-screen">
           <DJHero siteSettings={siteSettings} />
@@ -193,8 +145,14 @@ export default function HomeClient({
 
           <TourSection tours={tours} />
           <LatestTracks sets={sets} />
-          <SpotifySection />
-          <QuoteSection />
+          <SpotifySection 
+            desktopMedia={spotifyDesktopMedia}
+            mobileMedia={spotifyMobileMedia}
+          />
+          <QuoteSection 
+            desktopMedia={quoteDesktopMedia}
+            mobileMedia={quoteMobileMedia}
+          />
 
         </main>
         <Footer siteSettings={siteSettings} />

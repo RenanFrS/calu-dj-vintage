@@ -24,7 +24,7 @@ export default buildConfig({
   i18n: {
     supportedLanguages: { en, pt },
   },
-  secret: process.env.SECRET_SALT || 'dev-secret',
+  secret: process.env.PAYLOAD_SECRET || '',
 
   admin: {
     user: Users.slug,

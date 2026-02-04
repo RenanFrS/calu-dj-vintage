@@ -58,14 +58,23 @@ export interface SocialLink {
 export interface SiteSettings {
   logo?: Media | string
   logoAlt?: string
+  // Background Hero
   heroBackgroundDesktop?: Media | string
   heroBackgroundMobile?: Media | string
-  useVideoBackground?: boolean
+  heroOverlayOpacity?: number
+  // Background Seções
+  quoteSectionBackgroundDesktop?: Media | string
+  quoteSectionBackgroundMobile?: Media | string
+  spotifySectionBackgroundDesktop?: Media | string
+  spotifySectionBackgroundMobile?: Media | string
+  // Social Links
   socialLinks?: SocialLink[]
+  // Textos
   heroTitle?: string
   heroSubtitle?: string
   footerTagline?: string
   copyrightText?: string
+  // SEO
   siteTitle?: string
   siteDescription?: string
   ogImage?: Media | string

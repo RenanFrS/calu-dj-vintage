@@ -29,30 +29,78 @@ export const SiteSettings: GlobalConfig = {
         },
         {
           label: 'Background Hero',
+          description: 'Configure o background do hero com suporte a imagem, GIF ou vídeo',
           fields: [
             {
               name: 'heroBackgroundDesktop',
               type: 'upload',
               relationTo: 'media',
-              label: 'Background Desktop (vídeo ou imagem)',
+              label: 'Background Desktop',
               admin: {
-                description: 'Vídeo ou imagem para o hero em desktop (1920x1080 recomendado)',
+                description: 'Aceita: Imagem (JPG, PNG, WebP), GIF animado ou Vídeo (MP4, WebM). Resolução recomendada: 1920x1080',
               },
             },
             {
               name: 'heroBackgroundMobile',
               type: 'upload',
               relationTo: 'media',
-              label: 'Background Mobile (vídeo ou imagem)',
+              label: 'Background Mobile',
               admin: {
-                description: 'Vídeo ou imagem para o hero em mobile (1080x1920 recomendado)',
+                description: 'Aceita: Imagem (JPG, PNG, WebP), GIF animado ou Vídeo (MP4, WebM). Resolução recomendada: 1080x1920. Se vazio, usa o desktop.',
               },
             },
             {
-              name: 'useVideoBackground',
-              type: 'checkbox',
-              label: 'Usar vídeo como background',
-              defaultValue: true,
+              name: 'heroOverlayOpacity',
+              type: 'number',
+              label: 'Opacidade do overlay escuro (%)',
+              defaultValue: 40,
+              min: 0,
+              max: 100,
+              admin: {
+                description: 'Controla o escurecimento sobre o background (0 = sem overlay, 100 = totalmente escuro)',
+              },
+            },
+          ],
+        },
+        {
+          label: 'Background Seções',
+          description: 'Configure backgrounds para outras seções do site',
+          fields: [
+            {
+              name: 'quoteSectionBackgroundDesktop',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Background Seção Orçamento - Desktop',
+              admin: {
+                description: 'Aceita: Imagem (JPG, PNG, WebP), GIF animado ou Vídeo (MP4, WebM)',
+              },
+            },
+            {
+              name: 'quoteSectionBackgroundMobile',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Background Seção Orçamento - Mobile',
+              admin: {
+                description: 'Se vazio, usa o desktop',
+              },
+            },
+            {
+              name: 'spotifySectionBackgroundDesktop',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Background Seção Spotify - Desktop',
+              admin: {
+                description: 'Aceita: Imagem (JPG, PNG, WebP), GIF animado ou Vídeo (MP4, WebM)',
+              },
+            },
+            {
+              name: 'spotifySectionBackgroundMobile',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Background Seção Spotify - Mobile',
+              admin: {
+                description: 'Se vazio, usa o desktop',
+              },
             },
           ],
         },

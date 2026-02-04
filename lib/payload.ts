@@ -1,7 +1,7 @@
 import { getPayload as getPayloadServer } from 'payload'
+import config from '../payload.config'
 
 export const getPayload = async () => {
-  const { default: config } = await import('../payload.config')
   return getPayloadServer({ config })
 }
 
