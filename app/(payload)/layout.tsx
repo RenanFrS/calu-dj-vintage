@@ -30,10 +30,9 @@ async function serverFunction(payload: { name: string; args?: any }) {
 // Layout awaits config at runtime so we pass an intact config to Payload
 const Layout = async ({ children }: Args) => {
   const { default: config } = await import('@payload-config')
-  const safeConfig = JSON.parse(JSON.stringify(config))
 
   return (
-    <RootLayout config={safeConfig} importMap={importMap} serverFunction={serverFunction}>
+    <RootLayout config={config} importMap={importMap} serverFunction={serverFunction}>
       {children}
     </RootLayout>
   )
