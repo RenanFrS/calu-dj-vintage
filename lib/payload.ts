@@ -1,8 +1,8 @@
 import { getPayload as getPayloadServer } from 'payload'
-import config from '../payload.config'
+import configPromise from '@payload-config'
 
 export const getPayload = async () => {
-  return getPayloadServer({ config })
+  return getPayloadServer({ config: configPromise })
 }
 
 // Funções auxiliares para buscar dados
