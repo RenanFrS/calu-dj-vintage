@@ -14,11 +14,16 @@ import { GalleryImages } from './collections/GalleryImages'
 
 import { SiteSettings } from './globals/SiteSettings'
 import { About } from './globals/About'
+import { en } from '@payloadcms/translations/languages/en'
+import { pt } from '@payloadcms/translations/languages/pt'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
+  i18n: {
+    supportedLanguages: { en, pt },
+  },
   secret: process.env.SECRET_SALT || 'dev-secret',
 
   admin: {
