@@ -9,12 +9,10 @@ const s3Endpoint = process.env.S3_ENDPOINT;
 const r2Hostname = s3Endpoint ? new URL(s3Endpoint).hostname : null;
 
 const nextConfig: NextConfig = {
-  experimental: {
-    reactCompiler: false,
-  },
+  reactCompiler: false,
   // Silencia avisos de deprecação do Sass @import (usados pelo Payload CMS)
   sassOptions: {
-    silenceDeprecations: ['legacy-js-api', 'import'],
+    silenceDeprecations: ['import'],
     quietDeps: true,
   },
   images: {

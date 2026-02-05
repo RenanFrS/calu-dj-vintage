@@ -1,41 +1,31 @@
 /* THIS FILE WAS GENERATED AUTOMATICALLY BY PAYLOAD. */
 /* DO NOT MODIFY IT BECAUSE IT COULD BE REWRITTEN AT ANY TIME. */
+import config from '@payload-config'
 import '@payloadcms/next/css'
-import { RootLayout, handleServerFunctions } from '@payloadcms/next/layouts'
+import type { ServerFunctionClient } from 'payload'
+import { handleServerFunctions, RootLayout } from '@payloadcms/next/layouts'
 import React from 'react'
 
+import { importMap } from './admin/importMap.js'
 import './custom.scss'
-import { importMap } from './admin/importMap'
-
-export const runtime = 'nodejs'
 
 type Args = {
   children: React.ReactNode
 }
 
-// Server Action que delega para o utilitário do pacote
-async function serverFunction(payload: { name: string; args?: any }) {
+const serverFunction: ServerFunctionClient = async function (args) {
   'use server'
-
-  const { default: config } = await import('@payload-config')
-
   return handleServerFunctions({
-    name: payload.name,
-    args: payload.args,
-    config: Promise.resolve(config),
+    ...args,
+    config,
     importMap,
   })
 }
 
-// Layout awaits config at runtime so we pass an intact config to Payload
-const Layout = async ({ children }: Args) => {
-  const { default: config } = await import('@payload-config')
-
-  return (
-    <RootLayout config={config} importMap={importMap} serverFunction={serverFunction}>
-      {children}
-    </RootLayout>
-  )
-}
+const Layout = ({ children }: Args) => (
+  <RootLayout config={config} importMap={importMap} serverFunction={serverFunction}>
+    {children}
+  </RootLayout>
+)
 
 export default Layout

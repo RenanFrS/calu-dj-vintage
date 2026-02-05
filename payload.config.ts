@@ -33,9 +33,9 @@ export default buildConfig({
     },
     meta: {
       titleSuffix: ' - Calu DJ',
-      icons: [{ url: '/logo/logo-calu.png' }],
+      icons: [{ url: '/logo/logo-teste.png' }],
       openGraph: {
-        images: [{ url: '/logo/logo-calu.png' }],
+        images: [{ url: '/logo/logo-teste.png' }],
       },
     },
     components: {
