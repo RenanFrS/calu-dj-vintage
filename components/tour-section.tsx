@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Calendar, MapPin, Ticket } from "lucide-react"
+import { Calendar, MapPin, Ticket, Info } from "lucide-react"
 import Image from "next/image"
 import type { Tour, Media } from "@/types/payload"
 import { getMediaUrl } from "@/types/payload"
@@ -86,34 +86,58 @@ export function TourSection({ tours }: TourSectionProps) {
                     </div>
 
                     <div>
-                      {show.status === "sold-out" ? (
-                        <Button
-                          disabled
-                          variant="outline"
-                          className="w-full sm:w-auto bg-muted text-muted-foreground border-2"
-                        >
-                          {"Esgotado"}
-                        </Button>
+                      {show.hasTickets ? (
+                        // Com venda de ingressos - mostra status
+                        show.status === "sold-out" ? (
+                          <Button
+                            disabled
+                            variant="outline"
+                            className="w-full sm:w-auto bg-muted text-muted-foreground border-2"
+                          >
+                            {"Esgotado"}
+                          </Button>
+                        ) : (
+                          <>
+                            <Button 
+                              asChild={!!show.ticketUrl}
+                              className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground border-2 border-secondary shadow-lg"
+                            >
+                              {show.ticketUrl ? (
+                                <a href={show.ticketUrl} target="_blank" rel="noopener noreferrer">
+                                  <Ticket className="mr-2 h-4 w-4" />
+                                  {"Ingressos"}
+                                </a>
+                              ) : (
+                                <>
+                                  <Ticket className="mr-2 h-4 w-4" />
+                                  {"Ingressos"}
+                                </>
+                              )}
+                            </Button>
+                            {show.status === "few-tickets" && (
+                              <p className="text-xs text-secondary font-bold mt-1 text-center">{"Últimos ingressos!"}</p>
+                            )}
+                          </>
+                        )
                       ) : (
+                        // Sem venda de ingressos - mostra "Mais informações"
                         <Button 
                           asChild={!!show.ticketUrl}
-                          className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground border-2 border-secondary shadow-lg"
+                          variant="outline"
+                          className="w-full sm:w-auto border-2 border-secondary hover:bg-secondary hover:text-secondary-foreground bg-transparent text-secondary shadow-lg"
                         >
                           {show.ticketUrl ? (
                             <a href={show.ticketUrl} target="_blank" rel="noopener noreferrer">
-                              <Ticket className="mr-2 h-4 w-4" />
-                              {"Ingressos"}
+                              <Info className="mr-2 h-4 w-4" />
+                              {"Mais informações"}
                             </a>
                           ) : (
                             <>
-                              <Ticket className="mr-2 h-4 w-4" />
-                              {"Ingressos"}
+                              <Info className="mr-2 h-4 w-4" />
+                              {"Mais informações"}
                             </>
                           )}
                         </Button>
-                      )}
-                      {show.status === "few-tickets" && (
-                        <p className="text-xs text-secondary font-bold mt-1 text-center">{"Últimos ingressos!"}</p>
                       )}
                     </div>
                   </div>

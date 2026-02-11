@@ -1,17 +1,24 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Menu, X, Mail, Twitter } from "lucide-react"
+import { Menu, X } from "lucide-react"
 import { FaTiktok, FaSpotify, FaYoutube, FaSoundcloud, FaInstagram } from 'react-icons/fa';
 import Image from "next/image"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import type { SiteSettings, SocialLink } from "@/types/payload"
 import { getMediaUrl } from "@/types/payload"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { useI18n } from "@/lib/i18n-context"
 
+interface MediaSource {
+  url: string
+  mimeType?: string
+}
+
 interface DJHeroProps {
   siteSettings?: SiteSettings | null
+  heroDesktopMedia?: MediaSource | null
+  heroMobileMedia?: MediaSource | null
+  heroOverlayOpacity?: number
 }
 
 // Mapeamento de ícones por plataforma
@@ -23,14 +30,69 @@ const socialIcons: Record<string, React.ComponentType<{ className?: string }>> =
   tiktok: FaTiktok,
 }
 
-export function DJHero({ siteSettings }: DJHeroProps) {
+// Detecta se a mídia é um vídeo
+function isVideo(media: MediaSource | null | undefined): boolean {
+  if (!media?.url) return false
+  const videoMimeTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime', 'video/mov']
+  if (media.mimeType && videoMimeTypes.includes(media.mimeType)) return true
+  const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.m4v']
+  return videoExtensions.some(ext => media.url.toLowerCase().includes(ext))
+}
+
+// Componente de vídeo background
+function HeroVideo({ src }: { src: string }) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+
+    const playVideo = async () => {
+      try {
+        video.muted = true
+        video.playsInline = true
+        video.loop = true
+        video.autoplay = true
+        video.load()
+        await video.play()
+      } catch (error) {
+        console.warn('Autoplay bloqueado:', error)
+      }
+    }
+    playVideo()
+  }, [src])
+
+  return (
+    <video
+      ref={videoRef}
+      autoPlay
+      loop
+      muted
+      playsInline
+      preload="auto"
+      className="absolute inset-0 w-full h-full object-cover"
+    >
+      <source src={src} type="video/mp4" />
+    </video>
+  )
+}
+
+export function DJHero({ siteSettings, heroDesktopMedia, heroMobileMedia, heroOverlayOpacity = 40 }: DJHeroProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const { t } = useI18n()
 
   // Usar links do Payload (sem fallback)
   const socialLinks = siteSettings?.socialLinks?.filter(link => link.enabled !== false) || []
   const logoUrl = getMediaUrl(siteSettings?.logo)
   const logoAlt = siteSettings?.logoAlt || "Logo"
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -40,8 +102,35 @@ export function DJHero({ siteSettings }: DJHeroProps) {
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
+  // Selecionar mídia baseado no tamanho da tela
+  const currentMedia = isMobile 
+    ? (heroMobileMedia?.url ? heroMobileMedia : heroDesktopMedia) 
+    : heroDesktopMedia
+
   return (
-    <section className="relative min-h-screen pt-16 flex items-center justify-center overflow-hidden bg-background border-0">
+    <section className="relative min-h-screen pt-16 flex items-center justify-center overflow-hidden border-0">
+      {/* Background do Hero */}
+      {currentMedia?.url && (
+        <div className="absolute inset-0 z-0">
+          {isVideo(currentMedia) ? (
+            <HeroVideo src={currentMedia.url} />
+          ) : (
+            <Image
+              src={currentMedia.url}
+              alt="Hero Background"
+              fill
+              className="object-cover"
+              priority
+            />
+          )}
+          {/* Overlay */}
+          <div 
+            className="absolute inset-0 bg-black pointer-events-none"
+            style={{ opacity: heroOverlayOpacity / 100 }}
+          />
+        </div>
+      )}
+
       {/* Spline animated background */}
       {/* <div className="absolute inset-0 z-0">
         <iframe
@@ -146,10 +235,7 @@ export function DJHero({ siteSettings }: DJHeroProps) {
         </nav>
       </header>
 
-      {/* Background overlay */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none border-0">
-        <div className="absolute inset-0 bg-black/70 pointer-events-none border-0" />
-      </div>
+      {/* Background overlay - removido pois o DynamicBackground já tem overlay configurável */}
 
       {/* Content - simplified centered hero (header/nav kept) */}
       <div className="relative z-30 w-full flex items-center justify-center min-h-screen">

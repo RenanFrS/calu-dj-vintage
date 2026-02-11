@@ -20,20 +20,50 @@ interface LatestTracksProps {
   sets?: Set[]
 }
 
+// Helper para extrair o ID do vídeo de uma URL do YouTube
+function extractYouTubeVideoId(url: string | undefined): string {
+  if (!url) return ''
+  
+  // Padrões de URL do YouTube:
+  // https://www.youtube.com/watch?v=VIDEO_ID
+  // https://youtu.be/VIDEO_ID
+  // https://www.youtube.com/embed/VIDEO_ID
+  // https://www.youtube.com/v/VIDEO_ID
+  
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/)([a-zA-Z0-9_-]{11})/,
+    /^([a-zA-Z0-9_-]{11})$/ // Caso seja apenas o ID
+  ]
+  
+  for (const pattern of patterns) {
+    const match = url.match(pattern)
+    if (match && match[1]) {
+      return match[1]
+    }
+  }
+  
+  return ''
+}
+
 export function LatestTracks({ sets }: LatestTracksProps) {
   const tracks = sets || []
   
   // Mapear tracks para o formato esperado pelo carousel
-  const carouselImages = tracks.map(t => {
-    const customThumbnail = getMediaUrl(t.thumbnail)
-    const thumbnailSrc = customThumbnail || (t.videoId ? `https://img.youtube.com/vi/${t.videoId}/hqdefault.jpg` : '')
+  // Filtrar apenas os que têm thumbnail válida
+  const carouselImages = tracks
+    .map(t => {
+      const customThumbnail = getMediaUrl(t.thumbnail)
+      const videoId = extractYouTubeVideoId(t.videoUrl)
+      const thumbnailSrc = customThumbnail || (videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : '')
 
-    return {
-      src: thumbnailSrc,
-      alt: t.title,
-      videoId: t.videoId || '',
-    }
-  })
+      return {
+        src: thumbnailSrc,
+        alt: t.title,
+        videoId: videoId,
+        videoUrl: t.videoUrl || '',
+      }
+    })
+    .filter(img => img.src) // Remove itens sem thumbnail válida
 
   return (
     <section id="music" className="py-24 px-4 relative overflow-hidden bg-transparent">
@@ -80,7 +110,7 @@ const Carousel_003 = ({
   autoplay = false,
   spaceBetween = 0,
 }: {
-  images: { src: string; alt: string; videoId: string }[];
+  images: { src: string; alt: string; videoId: string; videoUrl: string }[];
   className?: string;
   showPagination?: boolean;
   showNavigation?: boolean;
@@ -166,7 +196,7 @@ const Carousel_003 = ({
         >
           {images.map((image, index) => (
             <SwiperSlide key={index} className="">
-              <a href={`https://www.youtube.com/watch?v=${image.videoId}`} target="_blank" rel="noopener noreferrer" aria-label={`Abrir ${image.alt} no YouTube`} className="block h-full w-full">
+              <a href={image.videoUrl || `https://www.youtube.com/watch?v=${image.videoId}`} target="_blank" rel="noopener noreferrer" aria-label={`Abrir ${image.alt} no YouTube`} className="block h-full w-full">
                 <img
                   className="h-full w-full object-cover"
                   src={image.src}

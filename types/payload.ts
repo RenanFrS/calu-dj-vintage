@@ -23,7 +23,8 @@ export interface Tour {
   date: string
   venue: string
   location: string
-  status: 'available' | 'few-tickets' | 'sold-out'
+  hasTickets?: boolean
+  status?: 'available' | 'few-tickets' | 'sold-out'
   ticketUrl?: string
   featured?: boolean
   order?: number
@@ -34,7 +35,7 @@ export interface Set {
   title: string
   featuring?: string
   platform: 'youtube' | 'soundcloud' | 'spotify' | 'mixcloud'
-  videoId?: string
+  videoUrl?: string
   embedUrl?: string
   thumbnail?: Media | string
   order?: number
@@ -86,11 +87,22 @@ export interface AboutParagraph {
 }
 
 export interface About {
-  title: string
-  subtitle?: string
   profileImage: Media | string
-  paragraphs?: AboutParagraph[]
-  tagline?: string
+  // Português
+  title_pt?: string
+  subtitle_pt?: string
+  paragraphs_pt?: AboutParagraph[]
+  tagline_pt?: string
+  // English
+  title_en?: string
+  subtitle_en?: string
+  paragraphs_en?: AboutParagraph[]
+  tagline_en?: string
+  // Français
+  title_fr?: string
+  subtitle_fr?: string
+  paragraphs_fr?: AboutParagraph[]
+  tagline_fr?: string
 }
 
 // Helper para extrair URL de mídia

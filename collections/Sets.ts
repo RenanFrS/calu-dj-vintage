@@ -35,11 +35,11 @@ export const Sets: CollectionConfig = {
       required: true,
     },
     {
-      name: 'videoId',
+      name: 'videoUrl',
       type: 'text',
-      label: 'ID do Vídeo (YouTube)',
+      label: 'Link do Vídeo (YouTube)',
       admin: {
-        description: 'Apenas o ID do vídeo, ex: 0ieVBg5Nfj8',
+        description: 'Cole o link completo do vídeo do YouTube, ex: https://www.youtube.com/watch?v=0ieVBg5Nfj8 ou https://youtu.be/0ieVBg5Nfj8',
         condition: (data) => data.platform === 'youtube',
       },
     },

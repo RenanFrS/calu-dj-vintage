@@ -44,21 +44,35 @@ export const Tours: CollectionConfig = {
       required: true,
     },
     {
+      name: 'hasTickets',
+      type: 'checkbox',
+      label: 'Tem venda de ingressos?',
+      defaultValue: false,
+      admin: {
+        description: 'Marque se este evento possui venda de ingressos. Se não marcado, o botão exibirá "Mais informações".',
+      },
+    },
+    {
       name: 'status',
       type: 'select',
-      label: 'Status',
+      label: 'Status dos Ingressos',
       defaultValue: 'available',
       options: [
         { label: 'Ingressos Disponíveis', value: 'available' },
         { label: 'Últimos Ingressos', value: 'few-tickets' },
         { label: 'Esgotado', value: 'sold-out' },
       ],
-      required: true,
+      admin: {
+        condition: (data) => data.hasTickets === true,
+      },
     },
     {
       name: 'ticketUrl',
       type: 'text',
-      label: 'Link para Ingressos',
+      label: 'Link para Ingressos/Informações',
+      admin: {
+        description: 'Link para compra de ingressos ou página com mais informações do evento.',
+      },
     },
     {
       name: 'featured',

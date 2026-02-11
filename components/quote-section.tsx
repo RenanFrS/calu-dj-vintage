@@ -74,11 +74,11 @@ export function QuoteSection() {
                 <div className="text-center space-y-2">
                   <p className="text-white/70 text-sm uppercase tracking-wider">Email direto</p>
                   <a 
-                    href="mailto:djcaludj@gmail.com"
+                    href="mailto:bookings.calu@gmail.com"
                     className="inline-flex items-center gap-2 text-xl md:text-2xl font-medium text-white hover:text-white/80 transition-colors duration-300 group/email"
                   >
                     <Mail className="w-6 h-6 group-hover/email:scale-110 transition-transform" />
-                    djcaludj@gmail.com
+                    bookings.calu@gmail.com
                   </a>
                 </div>
 

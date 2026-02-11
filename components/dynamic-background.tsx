@@ -64,11 +64,25 @@ function VideoBackground({
     // Garantir autoplay mesmo em dispositivos móveis
     const playVideo = async () => {
       try {
+        // Forçar atributos necessários para autoplay
         video.muted = true
         video.playsInline = true
+        video.loop = true
+        video.autoplay = true
+        
+        // Carregar e tocar
+        video.load()
         await video.play()
       } catch (error) {
         console.warn('Autoplay bloqueado:', error)
+        // Tentar novamente após interação do usuário
+        const retryPlay = () => {
+          video.play().catch(() => {})
+          document.removeEventListener('click', retryPlay)
+          document.removeEventListener('touchstart', retryPlay)
+        }
+        document.addEventListener('click', retryPlay, { once: true })
+        document.addEventListener('touchstart', retryPlay, { once: true })
       }
     }
 
@@ -77,12 +91,21 @@ function VideoBackground({
     // Replay quando o vídeo terminar (fallback para loop)
     const handleEnded = () => {
       video.currentTime = 0
-      video.play()
+      video.play().catch(() => {})
     }
 
     video.addEventListener('ended', handleEnded)
     return () => video.removeEventListener('ended', handleEnded)
   }, [src])
+
+  // Detectar tipo de vídeo pela extensão
+  const getVideoType = (url: string): string => {
+    const lowerUrl = url.toLowerCase()
+    if (lowerUrl.includes('.webm')) return 'video/webm'
+    if (lowerUrl.includes('.ogg') || lowerUrl.includes('.ogv')) return 'video/ogg'
+    if (lowerUrl.includes('.mov')) return 'video/quicktime'
+    return 'video/mp4'
+  }
 
   return (
     <video
@@ -95,8 +118,7 @@ function VideoBackground({
       className={`w-full h-full object-cover ${className}`}
       style={{ pointerEvents: 'none' }}
     >
-      <source src={src} type="video/mp4" />
-      <source src={src} type="video/webm" />
+      <source src={src} type={getVideoType(src)} />
       Seu navegador não suporta vídeos.
     </video>
   )

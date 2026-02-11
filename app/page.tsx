@@ -1,9 +1,42 @@
 import { getSiteSettings, getAbout, getTours, getSets, getGalleryImages } from '@/lib/payload'
 import HomeClient from './home-client'
-import type { SiteSettings, About, Tour, Set, GalleryImage } from '@/types/payload'
+import type { SiteSettings, About, Tour, Set, GalleryImage, Media } from '@/types/payload'
+import type { Metadata } from 'next'
+import { getMediaUrl } from '@/types/payload'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 60 // Revalidar a cada 60 segundos
+
+// Gerar metadata dinâmico a partir do Payload
+export async function generateMetadata(): Promise<Metadata> {
+  let siteSettings: SiteSettings | null = null
+  
+  try {
+    siteSettings = await getSiteSettings() as SiteSettings
+  } catch (error) {
+    console.error('Erro ao buscar configurações do site para metadata:', error)
+  }
+
+  const title = siteSettings?.siteTitle || 'Calu DJ - Vintage Music Vibes'
+  const description = siteSettings?.siteDescription || 'Página oficial do Calu DJ - Som vintage e retrô para os melhores palcos do mundo'
+  const ogImage = getMediaUrl(siteSettings?.ogImage as Media | string | undefined)
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: ogImage ? [{ url: ogImage }] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: ogImage ? [ogImage] : [],
+    },
+  }
+}
 
 export default async function Home() {
   // Buscar dados do PayloadCMS
