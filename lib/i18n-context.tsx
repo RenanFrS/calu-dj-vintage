@@ -20,9 +20,15 @@ const translations: Record<Language, Record<string, string>> = {
     // Hero
     "hero.listening": "Você está ouvindo",
     // Tour Section
-    "tour.title": "Próximos Shows",
+    "tour.title": "Agenda de Shows",
+    "tour.subtitle": "Próximos shows e festivais",
     "tour.buyTickets": "Comprar Ingressos",
     "tour.noShows": "Configure no seu painel de admin!",
+    "tour.soldOut": "Esgotado",
+    "tour.tickets": "Ingressos",
+    "tour.moreInfo": "Mais informações",
+    "tour.fewTickets": "Últimos ingressos!",
+    "tour.viewAll": "Ver Todos os Shows",
     // About
     "about.title": "Sobre",
     "about.configure": "Configure no seu painel de admin!",
@@ -30,6 +36,16 @@ const translations: Record<Language, Record<string, string>> = {
     "music.title": "Últimas Tracks",
     "music.listen": "Ouvir",
     "music.configure": "Configure no seu painel de admin!",
+    // Sets
+    "sets.title": "Últimos Sets!",
+    "sets.subtitle": "Ouça meus sets mais recentes",
+    // Quote/Booking
+    "quote.title": "Peça um Orçamento",
+    "quote.description": "Interessado em ter DJ Calu no seu evento?",
+    "quote.descriptionLine2": "Entre em contato para solicitar um orçamento personalizado.",
+    "quote.sendMessage": "Mande uma mensagem",
+    "quote.or": "ou",
+    "quote.directEmail": "Email direto",
     // Gallery
     "gallery.title": "Galeria",
     "gallery.configure": "Configure no seu painel de admin!",
@@ -52,9 +68,15 @@ const translations: Record<Language, Record<string, string>> = {
     // Hero
     "hero.listening": "You are listening to",
     // Tour Section
-    "tour.title": "Upcoming Shows",
+    "tour.title": "Show Schedule",
+    "tour.subtitle": "Upcoming shows and festivals",
     "tour.buyTickets": "Buy Tickets",
     "tour.noShows": "Configure in your admin panel!",
+    "tour.soldOut": "Sold Out",
+    "tour.tickets": "Tickets",
+    "tour.moreInfo": "More Info",
+    "tour.fewTickets": "Last tickets!",
+    "tour.viewAll": "View All Shows",
     // About
     "about.title": "About",
     "about.configure": "Configure in your admin panel!",
@@ -62,6 +84,16 @@ const translations: Record<Language, Record<string, string>> = {
     "music.title": "Latest Tracks",
     "music.listen": "Listen",
     "music.configure": "Configure in your admin panel!",
+    // Sets
+    "sets.title": "Latest Sets!",
+    "sets.subtitle": "Listen to my most recent sets",
+    // Quote/Booking
+    "quote.title": "Request a Quote",
+    "quote.description": "Interested in having DJ Calu at your event?",
+    "quote.descriptionLine2": "Get in touch to request a personalized quote.",
+    "quote.sendMessage": "Send a message",
+    "quote.or": "or",
+    "quote.directEmail": "Direct Email",
     // Gallery
     "gallery.title": "Gallery",
     "gallery.configure": "Configure in your admin panel!",
@@ -84,9 +116,15 @@ const translations: Record<Language, Record<string, string>> = {
     // Hero
     "hero.listening": "Vous écoutez",
     // Tour Section
-    "tour.title": "Prochains Concerts",
+    "tour.title": "Agenda des Concerts",
+    "tour.subtitle": "Prochains concerts et festivals",
     "tour.buyTickets": "Acheter des Billets",
     "tour.noShows": "Configurez dans votre panneau d'administration!",
+    "tour.soldOut": "Épuisé",
+    "tour.tickets": "Billets",
+    "tour.moreInfo": "Plus d'infos",
+    "tour.fewTickets": "Derniers billets!",
+    "tour.viewAll": "Voir Tous les Concerts",
     // About
     "about.title": "À propos",
     "about.configure": "Configurez dans votre panneau d'administration!",
@@ -94,6 +132,16 @@ const translations: Record<Language, Record<string, string>> = {
     "music.title": "Dernières Pistes",
     "music.listen": "Écouter",
     "music.configure": "Configurez dans votre panneau d'administration!",
+    // Sets
+    "sets.title": "Derniers Sets!",
+    "sets.subtitle": "Écoutez mes sets les plus récents",
+    // Quote/Booking
+    "quote.title": "Demander un Devis",
+    "quote.description": "Intéressé à avoir DJ Calu à votre événement?",
+    "quote.descriptionLine2": "Contactez-nous pour demander un devis personnalisé.",
+    "quote.sendMessage": "Envoyer un message",
+    "quote.or": "ou",
+    "quote.directEmail": "Email direct",
     // Gallery
     "gallery.title": "Galerie",
     "gallery.configure": "Configurez dans votre panneau d'administration!",

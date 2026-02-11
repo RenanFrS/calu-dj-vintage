@@ -2,8 +2,11 @@
 
 import { Instagram, Mail } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useI18n } from '@/lib/i18n-context'
 
 export function QuoteSection() {
+  const { t } = useI18n()
+  
   return (
     <section className="relative w-full py-20 md:py-32 overflow-hidden">
       {/* Background gradient */}
@@ -21,7 +24,7 @@ export function QuoteSection() {
           {/* Title */}
           <div className="text-center mb-12">
             <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white font-serif mb-4">
-              Peça um Orçamento
+              {t("quote.title")}
             </h2>
             <div className="w-24 h-1 bg-white mx-auto" />
           </div>
@@ -40,8 +43,8 @@ export function QuoteSection() {
               <div className="space-y-8 text-center">
                 {/* Description */}
                 <p className="text-center text-lg md:text-xl text-white/90 leading-relaxed">
-                  Interessado em ter DJ Calu no seu evento?<br />
-                  Entre em contato para solicitar um orçamento personalizado.
+                  {t("quote.description")}<br />
+                  {t("quote.descriptionLine2")}
                 </p>
 
                 {/* Buttons */}
@@ -58,7 +61,7 @@ export function QuoteSection() {
                       className="w-full sm:w-auto bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 hover:from-purple-700 hover:via-pink-700 hover:to-orange-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 group-hover/btn:scale-105"
                     >
                       <Instagram className="w-5 h-5 mr-2" />
-                      Mande uma mensagem
+                      {t("quote.sendMessage")}
                     </Button>
                   </a>
                 </div>
@@ -66,13 +69,13 @@ export function QuoteSection() {
                 {/* Divider */}
                 <div className="flex items-center">
                   <div className="flex-1 h-px bg-white/20" />
-                  <span className="px-4 text-white/60 text-sm">ou</span>
+                  <span className="px-4 text-white/60 text-sm">{t("quote.or")}</span>
                   <div className="flex-1 h-px bg-white/20" />
                 </div>
 
                 {/* Email */}
                 <div className="text-center space-y-2">
-                  <p className="text-white/70 text-sm uppercase tracking-wider">Email direto</p>
+                  <p className="text-white/70 text-sm uppercase tracking-wider">{t("quote.directEmail")}</p>
                   <a 
                     href="mailto:bookings.calu@gmail.com"
                     className="inline-flex items-center gap-2 text-xl md:text-2xl font-medium text-white hover:text-white/80 transition-colors duration-300 group/email"

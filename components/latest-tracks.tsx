@@ -12,6 +12,7 @@ import "swiper/css/navigation"
 import "swiper/css/effect-cards"
 
 import { cn } from "@/lib/utils"
+import { useI18n } from "@/lib/i18n-context"
 import type { Set } from "@/types/payload"
 import { getMediaUrl } from "@/types/payload"
 import { Card } from "@/components/ui/card"
@@ -46,6 +47,7 @@ function extractYouTubeVideoId(url: string | undefined): string {
 }
 
 export function LatestTracks({ sets }: LatestTracksProps) {
+  const { t } = useI18n()
   const tracks = sets || []
   
   // Mapear tracks para o formato esperado pelo carousel
@@ -80,16 +82,15 @@ export function LatestTracks({ sets }: LatestTracksProps) {
       <div className="container relative z-10 mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-5xl md:text-6xl font-bold mb-4 text-balance text-secondary font-serif">
-            {"Últimos Sets!"}
+            {t("sets.title")}
           </h2>
-          <p className="text-xl text-muted-foreground">{"Ouça meus sets mais recentes"}</p>
+          <p className="text-xl text-muted-foreground">{t("sets.subtitle")}</p>
         </div>
 
         {tracks.length === 0 ? (
           <div className="max-w-md mx-auto">
             <Card className="p-12 text-center border-2 border-dashed border-secondary/30 bg-card/50">
-              <p className="text-xl text-muted-foreground">Configure no seu painel de admin!</p>
-              <p className="text-sm text-muted-foreground mt-2">Adicione sets na coleção "Sets"</p>
+              <p className="text-xl text-muted-foreground">{t("configure.admin")}</p>
             </Card>
           </div>
         ) : (
