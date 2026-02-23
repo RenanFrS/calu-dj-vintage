@@ -6,6 +6,8 @@ import Image from 'next/image'
 interface MediaSource {
   url: string
   mimeType?: string
+  /** URL de uma imagem para usar como poster/fallback quando o vídeo não pode iniciar (ex: Low Power Mode) */
+  posterUrl?: string
 }
 
 interface DynamicBackgroundProps {
@@ -50,9 +52,11 @@ function isGif(media: MediaSource | null | undefined): boolean {
 // Componente de vídeo com autoplay, loop e muted
 function VideoBackground({ 
   src, 
+  poster,
   className = '' 
 }: { 
   src: string
+  poster?: string
   className?: string 
 }) {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -61,28 +65,43 @@ function VideoBackground({
     const video = videoRef.current
     if (!video) return
 
-    // Garantir autoplay mesmo em dispositivos móveis
+    // Garantir autoplay mesmo em dispositivos móveis (especialmente Safari/iOS)
     const playVideo = async () => {
       try {
-        // Forçar atributos necessários para autoplay
+        // Forçar atributos necessários para autoplay no Safari/iOS
+        // defaultMuted é crucial para Safari permitir autoplay
+        video.defaultMuted = true
         video.muted = true
         video.playsInline = true
         video.loop = true
         video.autoplay = true
         
-        // Carregar e tocar
-        video.load()
-        await video.play()
-      } catch (error) {
-        console.warn('Autoplay bloqueado:', error)
-        // Tentar novamente após interação do usuário
-        const retryPlay = () => {
-          video.play().catch(() => {})
-          document.removeEventListener('click', retryPlay)
-          document.removeEventListener('touchstart', retryPlay)
+        // Aguardar o vídeo estar pronto para tocar
+        if (video.readyState >= 2) {
+          await video.play()
+        } else {
+          // Aguardar o vídeo carregar o suficiente
+          video.addEventListener('canplay', async () => {
+            try {
+              await video.play()
+            } catch (e) {
+              // Silenciosamente ignorar erro de autoplay
+            }
+          }, { once: true })
         }
-        document.addEventListener('click', retryPlay, { once: true })
-        document.addEventListener('touchstart', retryPlay, { once: true })
+      } catch (error) {
+        // Lidar silenciosamente com erro de "Low Power Mode" ou outras restrições
+        // Não logar no console para não poluir em produção
+        if (error instanceof Error && error.name !== 'AbortError') {
+          // Tentar novamente após interação do usuário
+          const retryPlay = () => {
+            video.play().catch(() => {})
+            document.removeEventListener('click', retryPlay)
+            document.removeEventListener('touchstart', retryPlay)
+          }
+          document.addEventListener('click', retryPlay, { once: true })
+          document.addEventListener('touchstart', retryPlay, { once: true })
+        }
       }
     }
 
@@ -115,6 +134,7 @@ function VideoBackground({
       muted
       playsInline
       preload="auto"
+      poster={poster}
       className={`w-full h-full object-cover ${className}`}
       style={{ pointerEvents: 'none' }}
     >
@@ -175,7 +195,7 @@ export function DynamicBackground({
     if (isVideo(media)) {
       return (
         <div className={`absolute inset-0 ${visibilityClass}`}>
-          <VideoBackground src={media.url} />
+          <VideoBackground src={media.url} poster={media.posterUrl} />
         </div>
       )
     }
@@ -222,18 +242,20 @@ export function DynamicBackground({
 
 // Helper para converter Media do Payload para MediaSource
 export function toMediaSource(
-  media: { url?: string; mimeType?: string } | string | null | undefined
+  media: { url?: string; mimeType?: string } | string | null | undefined,
+  posterUrl?: string
 ): MediaSource | null {
   if (!media) return null
   
   if (typeof media === 'string') {
-    return { url: media }
+    return { url: media, posterUrl }
   }
   
   if (media.url) {
     return {
       url: media.url,
-      mimeType: media.mimeType
+      mimeType: media.mimeType,
+      posterUrl
     }
   }
   
