@@ -4,13 +4,11 @@ import type { SiteSettings, About, Tour, Set, GalleryImage, Media } from '@/type
 import type { Metadata } from 'next'
 import { getMediaUrl } from '@/types/payload'
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 60 // Revalidar a cada 60 segundos
+export const revalidate = 60
 
-// Gerar metadata dinâmico a partir do Payload
 export async function generateMetadata(): Promise<Metadata> {
   let siteSettings: SiteSettings | null = null
-  
+
   try {
     siteSettings = await getSiteSettings() as SiteSettings
   } catch (error) {
@@ -39,42 +37,25 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  // Buscar dados do PayloadCMS
-  let siteSettings: SiteSettings | null = null
-  let about: About | null = null
-  let tours: Tour[] = []
-  let sets: Set[] = []
-  let galleryImages: GalleryImage[] = []
+  const [siteSettingsRes, aboutRes, toursRes, setsRes, galleryRes] = await Promise.allSettled([
+    getSiteSettings(),
+    getAbout(),
+    getTours(10),
+    getSets(10),
+    getGalleryImages(20),
+  ])
 
-  try {
-    siteSettings = await getSiteSettings() as SiteSettings
-  } catch (error) {
-    console.error('Erro ao buscar configurações do site:', error)
-  }
+  if (siteSettingsRes.status === 'rejected') console.error('Erro ao buscar configurações do site:', siteSettingsRes.reason)
+  if (aboutRes.status === 'rejected') console.error('Erro ao buscar informações sobre:', aboutRes.reason)
+  if (toursRes.status === 'rejected') console.error('Erro ao buscar tours:', toursRes.reason)
+  if (setsRes.status === 'rejected') console.error('Erro ao buscar sets:', setsRes.reason)
+  if (galleryRes.status === 'rejected') console.error('Erro ao buscar imagens da galeria:', galleryRes.reason)
 
-  try {
-    about = await getAbout() as About
-  } catch (error) {
-    console.error('Erro ao buscar informações sobre:', error)
-  }
-
-  try {
-    tours = await getTours(10) as Tour[]
-  } catch (error) {
-    console.error('Erro ao buscar tours:', error)
-  }
-
-  try {
-    sets = await getSets(10) as Set[]
-  } catch (error) {
-    console.error('Erro ao buscar sets:', error)
-  }
-
-  try {
-    galleryImages = await getGalleryImages(20) as GalleryImage[]
-  } catch (error) {
-    console.error('Erro ao buscar imagens da galeria:', error)
-  }
+  const siteSettings = siteSettingsRes.status === 'fulfilled' ? (siteSettingsRes.value as SiteSettings) : null
+  const about = aboutRes.status === 'fulfilled' ? (aboutRes.value as About) : null
+  const tours = toursRes.status === 'fulfilled' ? (toursRes.value as Tour[]) : []
+  const sets = setsRes.status === 'fulfilled' ? (setsRes.value as Set[]) : []
+  const galleryImages = galleryRes.status === 'fulfilled' ? (galleryRes.value as GalleryImage[]) : []
 
   return (
     <HomeClient
