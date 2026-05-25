@@ -23,7 +23,7 @@ interface CloudinaryUploadResponse {
   original_filename: string
 }
 
-const MAX_LIMIT_NOTE = 'O upload padrão da Vercel é limitado a ~4.5MB. Use esta opção para arquivos maiores.'
+const MAX_LIMIT_NOTE = 'Use esta opção para arquivos maiores que 4.5MB.'
 
 export default function MediaDirectUpload() {
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -99,7 +99,7 @@ export default function MediaDirectUpload() {
       setStatus(`Enviando ${file.name} para Cloudinary...`)
       const result = await uploadToCloudinary(file, sign)
 
-      setStatus('Registrando mídia no Payload...')
+      setStatus('Registrando mídia...')
       const createRes = await fetch('/api/media-direct', {
         method: 'POST',
         credentials: 'include',
