@@ -1,10 +1,10 @@
 import { buildConfig } from 'payload'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { cloudStoragePlugin } from '@payloadcms/plugin-cloud-storage'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
-import { s3Storage } from '@payloadcms/storage-s3'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
@@ -17,14 +17,26 @@ import { About } from './globals/About'
 import { en } from '@payloadcms/translations/languages/en'
 import { pt } from '@payloadcms/translations/languages/pt'
 
+import { cloudinaryAdapter } from './lib/cloudinary/adapter'
+import { isCloudinaryConfigured } from './lib/cloudinary/client'
+
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+const serverURL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+
 export default buildConfig({
+  serverURL,
+
   i18n: {
-    supportedLanguages: { en, pt },
+    fallbackLanguage: 'pt',
+    supportedLanguages: { pt, en },
   },
+
   secret: process.env.PAYLOAD_SECRET || '',
+
+  cors: [serverURL].filter(Boolean),
+  csrf: [serverURL].filter(Boolean),
 
   admin: {
     user: Users.slug,
@@ -56,18 +68,14 @@ export default buildConfig({
   }),
 
   plugins: [
-    s3Storage({
-      config: {
-        endpoint: process.env.S3_ENDPOINT,
-        region: process.env.S3_REGION,
-        credentials: {
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
-        },
-      },
-      bucket: process.env.S3_BUCKET || '',
+    cloudStoragePlugin({
+      enabled: isCloudinaryConfigured(),
       collections: {
-        media: true,
+        media: {
+          adapter: cloudinaryAdapter(),
+          disableLocalStorage: true,
+          disablePayloadAccessControl: true,
+        },
       },
     }),
   ],

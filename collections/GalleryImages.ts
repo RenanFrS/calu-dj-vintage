@@ -1,10 +1,21 @@
 import type { CollectionConfig } from 'payload'
+import { revalidateHomeAfterChange } from '../lib/revalidate'
 
 export const GalleryImages: CollectionConfig = {
   slug: 'gallery-images',
+  labels: {
+    singular: 'Galeria',
+    plural: 'Galeria',
+  },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'image', 'order'],
+    group: 'Conteúdo',
+    description: 'Imagens exibidas na galeria da home.',
+  },
+  hooks: {
+    afterChange: [revalidateHomeAfterChange],
+    afterDelete: [revalidateHomeAfterChange],
   },
   access: {
     read: () => true,
@@ -22,6 +33,19 @@ export const GalleryImages: CollectionConfig = {
       relationTo: 'media',
       label: 'Imagem',
       required: true,
+    },
+    {
+      name: 'imageCrop',
+      type: 'json',
+      label: 'Enquadramento',
+      admin: {
+        components: {
+          Field: {
+            path: '/components/admin/ImageCropField#default',
+            clientProps: { uploadFieldName: 'image', defaultAspect: 1 },
+          },
+        },
+      },
     },
     {
       name: 'order',

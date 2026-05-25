@@ -1,10 +1,21 @@
 import type { CollectionConfig } from 'payload'
+import { revalidateHomeAfterChange } from '../lib/revalidate'
 
 export const Tours: CollectionConfig = {
   slug: 'tours',
+  hooks: {
+    afterChange: [revalidateHomeAfterChange],
+    afterDelete: [revalidateHomeAfterChange],
+  },
+  labels: {
+    singular: 'Show',
+    plural: 'Shows / Agenda',
+  },
   admin: {
     useAsTitle: 'venue',
     defaultColumns: ['venue', 'date', 'location', 'status'],
+    group: 'Conteúdo',
+    description: 'Próximos shows e eventos exibidos na seção de agenda.',
   },
   access: {
     read: () => true,

@@ -3,13 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-  "dev": "next dev --turbopack",
-  "build": "pnpm payload:generate && next build",
-  "payload:generate": "cross-env NODE_OPTIONS=\"--import tsx\" payload generate:types && cross-env NODE_OPTIONS=\"--import tsx\" payload generate:importmap",
-  "payload": "cross-env NODE_OPTIONS=\"--import tsx\" payload"
-},
+    "dev": "next dev --turbopack",
+    "build": "pnpm payload:generate && next build",
+    "payload:generate": "cross-env NODE_OPTIONS=\"--import tsx\" payload generate:types && cross-env NODE_OPTIONS=\"--import tsx\" payload generate:importmap",
+    "payload": "cross-env NODE_OPTIONS=\"--import tsx\" payload"
+  },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.972.0",
     "@hookform/resolvers": "^3.10.0",
     "@payloadcms/db-mongodb": "3.74.0",
     "@payloadcms/live-preview-react": "^3.74.0",
@@ -17,7 +16,6 @@
     "@payloadcms/plugin-cloud-storage": "3.74.0",
     "@payloadcms/plugin-search": "^3.74.0",
     "@payloadcms/richtext-lexical": "3.74.0",
-    "@payloadcms/storage-s3": "3.74.0",
     "@payloadcms/translations": "3.74.0",
     "@payloadcms/ui": "3.74.0",
     "@radix-ui/react-accordion": "1.2.2",
@@ -51,6 +49,7 @@
     "@vercel/analytics": "^1.5.0",
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.1",
+    "cloudinary": "^2.5.1",
     "clsx": "^2.1.1",
     "cmdk": "1.0.4",
     "date-fns": "3.6.0",
@@ -70,6 +69,7 @@
     "react": "^19.2.4",
     "react-day-picker": "9.8.0",
     "react-dom": "^19.2.4",
+    "react-easy-crop": "^5.5.7",
     "react-hook-form": "^7.60.0",
     "react-icons": "^5.5.0",
     "react-resizable-panels": "^2.1.7",
@@ -102,8 +102,8 @@
     "typescript": "5.9.3"
   },
   "engines": {
-  "node": "22.x"
-},
+    "node": "22.x"
+  },
   "pnpm": {
     "overrides": {
       "date-fns": "3.6.0"

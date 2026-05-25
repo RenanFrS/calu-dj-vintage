@@ -1,10 +1,21 @@
 import type { CollectionConfig } from 'payload'
+import { revalidateHomeAfterChange } from '../lib/revalidate'
 
 export const Sets: CollectionConfig = {
   slug: 'sets',
+  hooks: {
+    afterChange: [revalidateHomeAfterChange],
+    afterDelete: [revalidateHomeAfterChange],
+  },
+  labels: {
+    singular: 'Set',
+    plural: 'Sets / Vídeos',
+  },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'featuring', 'platform', 'order'],
+    group: 'Conteúdo',
+    description: 'Vídeos e sets exibidos no carrossel da home.',
   },
   access: {
     read: () => true,

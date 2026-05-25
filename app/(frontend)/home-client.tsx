@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { VinylPreloader } from "@/components/vinyl-preloader"
 import { DJHero } from "@/components/dj-hero"
 import { LatestTracks } from "@/components/latest-tracks"
@@ -23,30 +23,32 @@ interface HomeClientProps {
   galleryImages: GalleryImage[]
 }
 
-export default function HomeClient({ 
-  siteSettings, 
-  about, 
-  tours, 
-  sets, 
-  galleryImages 
+export default function HomeClient({
+  siteSettings,
+  about,
+  tours,
+  sets,
+  galleryImages,
 }: HomeClientProps) {
   const [loading, setLoading] = useState(true)
   const [showContent, setShowContent] = useState(false)
 
-  // Processar imagens da galeria (somente do Payload)
-  const processedGalleryImages = galleryImages.map(img => getMediaUrl(img.image) || '').filter(Boolean)
+  const processedGalleryImages = useMemo(
+    () =>
+      galleryImages
+        .map((img) => getMediaUrl(img.image))
+        .filter((src): src is string => Boolean(src)),
+    [galleryImages],
+  )
 
-  // Preparar mídias do background hero
   const heroDesktopMedia = toMediaSource(siteSettings?.heroBackgroundDesktop as Media | string | undefined)
   const heroMobileMedia = toMediaSource(siteSettings?.heroBackgroundMobile as Media | string | undefined)
   const heroOverlayOpacity = siteSettings?.heroOverlayOpacity ?? 40
 
-  // Preparar mídias do background das seções (unificado)
   const sectionsDesktopMedia = toMediaSource(siteSettings?.sectionsBackgroundDesktop as Media | string | undefined)
   const sectionsMobileMedia = toMediaSource(siteSettings?.sectionsBackgroundMobile as Media | string | undefined)
   const sectionsOverlayOpacity = siteSettings?.sectionsOverlayOpacity ?? 60
 
-  // Safety fallback: in case preloader gets stuck for any reason, remove it after 8s
   useEffect(() => {
     const t = setTimeout(() => {
       if (loading) {
@@ -66,18 +68,16 @@ export default function HomeClient({
     <I18nProvider>
       {loading && <VinylPreloader onComplete={handleLoadingComplete} />}
 
-      <div className={`${showContent ? "opacity-100" : "opacity-0"}`}>
+      <div className={`${showContent ? 'opacity-100' : 'opacity-0'}`}>
         <main className="min-h-screen">
-          <DJHero 
+          <DJHero
             siteSettings={siteSettings}
             heroDesktopMedia={heroDesktopMedia}
             heroMobileMedia={heroMobileMedia}
             heroOverlayOpacity={heroOverlayOpacity}
           />
 
-          {/* Container com background unificado para seções abaixo do hero */}
           <div className="relative">
-            {/* Background fixo das seções */}
             {(sectionsDesktopMedia || sectionsMobileMedia) && (
               <DynamicBackground
                 desktopMedia={sectionsDesktopMedia}
@@ -87,18 +87,15 @@ export default function HomeClient({
               />
             )}
 
-          {/* Quem sou */}
-          <AboutSection about={about} />
-          
-          <Masonry id="gallery" className="py-12" images={processedGalleryImages} />
+            <AboutSection about={about} />
 
-          <TourSection tours={tours} />
-          <LatestTracks sets={sets} />
-          <SpotifySection />
-          <QuoteSection />
+            <Masonry id="gallery" className="py-12" images={processedGalleryImages} />
 
-          </div>{/* Fim do container com background das seções */}
-
+            <TourSection tours={tours} />
+            <LatestTracks sets={sets} />
+            <SpotifySection />
+            <QuoteSection />
+          </div>
         </main>
         <Footer siteSettings={siteSettings} />
       </div>

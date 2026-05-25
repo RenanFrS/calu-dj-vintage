@@ -4,7 +4,8 @@ import type { SiteSettings, About, Tour, Set, GalleryImage, Media } from '@/type
 import type { Metadata } from 'next'
 import { getMediaUrl } from '@/types/payload'
 
-export const revalidate = 60
+// Frontend usa cache curto + revalidação on-demand via hooks do Payload (lib/revalidate.ts)
+export const revalidate = 10
 
 export async function generateMetadata(): Promise<Metadata> {
   let siteSettings: SiteSettings | null = null

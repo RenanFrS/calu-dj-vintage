@@ -1,17 +1,20 @@
 "use client"
 
 import { Menu, X } from "lucide-react"
-import { FaTiktok, FaSpotify, FaYoutube, FaSoundcloud, FaInstagram } from 'react-icons/fa';
+import { FaTiktok, FaSpotify, FaYoutube, FaSoundcloud, FaInstagram } from 'react-icons/fa'
 import Image from "next/image"
-import { useState, useEffect, useRef } from "react"
-import type { SiteSettings, SocialLink } from "@/types/payload"
+import { useState, useEffect } from "react"
+import type { SiteSettings } from "@/types/payload"
 import { getMediaUrl } from "@/types/payload"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { useI18n } from "@/lib/i18n-context"
+import { buildCloudinaryVideoIframe } from "@/lib/cloudinary/urls"
 
 interface MediaSource {
   url: string
   mimeType?: string
+  cloudinaryPublicId?: string
+  cloudinaryResourceType?: 'image' | 'video' | 'raw'
 }
 
 interface DJHeroProps {
@@ -21,7 +24,6 @@ interface DJHeroProps {
   heroOverlayOpacity?: number
 }
 
-// Mapeamento de ícones por plataforma
 const socialIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   instagram: FaInstagram,
   youtube: FaYoutube,
@@ -30,49 +32,49 @@ const socialIcons: Record<string, React.ComponentType<{ className?: string }>> =
   tiktok: FaTiktok,
 }
 
-// Detecta se a mídia é um vídeo
 function isVideo(media: MediaSource | null | undefined): boolean {
   if (!media?.url) return false
-  const videoMimeTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime', 'video/mov']
-  if (media.mimeType && videoMimeTypes.includes(media.mimeType)) return true
+  if (media.cloudinaryResourceType === 'video') return true
+  if (media.mimeType?.startsWith('video/')) return true
   const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.m4v']
   return videoExtensions.some(ext => media.url.toLowerCase().includes(ext))
 }
 
-// Componente de vídeo background
-function HeroVideo({ src }: { src: string }) {
-  const videoRef = useRef<HTMLVideoElement>(null)
+function HeroCloudinaryVideo({ publicId }: { publicId: string }) {
+  const src = buildCloudinaryVideoIframe(publicId, {
+    autoplay: true,
+    loop: true,
+    muted: true,
+    controls: false,
+    fluid: true,
+  })
 
-  useEffect(() => {
-    const video = videoRef.current
-    if (!video) return
-
-    const playVideo = async () => {
-      try {
-        video.muted = true
-        video.playsInline = true
-        video.loop = true
-        video.autoplay = true
-        video.load()
-        await video.play()
-      } catch (error) {
-        console.warn('Autoplay bloqueado:', error)
-      }
-    }
-    playVideo()
-  }, [src])
+  if (!src) return null
 
   return (
+    <iframe
+      src={src}
+      title="Hero video"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      allowFullScreen
+      frameBorder={0}
+      className="absolute inset-0 w-full h-full pointer-events-none"
+      style={{ width: '100%', height: '100%' }}
+    />
+  )
+}
+
+function HeroFallbackVideo({ src }: { src: string }) {
+  return (
     <video
-      ref={videoRef}
       autoPlay
       loop
       muted
       playsInline
       preload="auto"
-      className="absolute inset-0 w-full h-full object-cover"
+      className="absolute inset-0 w-full h-full object-cover pointer-events-none"
     >
-      <source src={src} type="video/mp4" />
+      <source src={src} />
     </video>
   )
 }
@@ -82,7 +84,6 @@ export function DJHero({ siteSettings, heroDesktopMedia, heroMobileMedia, heroOv
   const [isMobile, setIsMobile] = useState(false)
   const { t } = useI18n()
 
-  // Usar links do Payload (sem fallback)
   const socialLinks = siteSettings?.socialLinks?.filter(link => link.enabled !== false) || []
   const logoUrl = getMediaUrl(siteSettings?.logo)
   const logoAlt = siteSettings?.logoAlt || "Logo"
@@ -102,46 +103,42 @@ export function DJHero({ siteSettings, heroDesktopMedia, heroMobileMedia, heroOv
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
-  // Selecionar mídia baseado no tamanho da tela
-  const currentMedia = isMobile 
-    ? (heroMobileMedia?.url ? heroMobileMedia : heroDesktopMedia) 
+  const currentMedia = isMobile
+    ? (heroMobileMedia?.url ? heroMobileMedia : heroDesktopMedia)
     : heroDesktopMedia
+
+  const renderBackground = () => {
+    if (!currentMedia?.url) return null
+
+    if (isVideo(currentMedia)) {
+      if (currentMedia.cloudinaryPublicId) {
+        return <HeroCloudinaryVideo publicId={currentMedia.cloudinaryPublicId} />
+      }
+      return <HeroFallbackVideo src={currentMedia.url} />
+    }
+
+    return (
+      <Image
+        src={currentMedia.url}
+        alt="Hero Background"
+        fill
+        className="object-cover"
+        priority
+      />
+    )
+  }
 
   return (
     <section className="relative min-h-screen pt-16 flex items-center justify-center overflow-hidden border-0">
-      {/* Background do Hero */}
       {currentMedia?.url && (
         <div className="absolute inset-0 z-0">
-          {isVideo(currentMedia) ? (
-            <HeroVideo src={currentMedia.url} />
-          ) : (
-            <Image
-              src={currentMedia.url}
-              alt="Hero Background"
-              fill
-              className="object-cover"
-              priority
-            />
-          )}
-          {/* Overlay */}
-          <div 
+          {renderBackground()}
+          <div
             className="absolute inset-0 bg-black pointer-events-none"
             style={{ opacity: heroOverlayOpacity / 100 }}
           />
         </div>
       )}
-
-      {/* Spline animated background */}
-      {/* <div className="absolute inset-0 z-0">
-        <iframe
-          src="https://my.spline.design/motiontrails-BBtf0T09MvPoaXfC8iY8Rqga/"
-          frameBorder={0}
-          width="100%"
-          height="100%"
-          className="h-full w-full"
-          style={{ pointerEvents: 'none' }}
-        />
-      </div> */}
 
       <div className="absolute inset-0 opacity-5 z-[1] border-0">
         <div
@@ -156,7 +153,6 @@ export function DJHero({ siteSettings, heroDesktopMedia, heroMobileMedia, heroOv
       <header className="absolute top-0 left-0 right-0 z-50 bg-transparent pointer-events-auto border-0">
         <nav className="container mx-auto px-6 py-3 border-0" aria-label="Main navigation">
           <div className="flex items-center justify-between">
-            {/* Left - desktop links */}
             <div className="hidden md:flex gap-4 items-center">
               <a href="#music" className="text-foreground hover:text-primary transition-colors font-medium uppercase text-sm tracking-wider focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white hover:ring-2 hover:ring-white hover:ring-offset-2 cursor-pointer px-3 py-2 rounded">
                 {t("nav.music")}
@@ -172,7 +168,6 @@ export function DJHero({ siteSettings, heroDesktopMedia, heroMobileMedia, heroOv
               </a>
             </div>
 
-            {/* Logo */}
             <div className="flex-shrink-0">
               {logoUrl ? (
                 <Image
@@ -188,7 +183,6 @@ export function DJHero({ siteSettings, heroDesktopMedia, heroMobileMedia, heroOv
               )}
             </div>
 
-            {/* Right - desktop icons + language flags + mobile menu button */}
             <div className="flex items-center gap-3">
               <div className="hidden md:flex gap-3 items-center">
                 {socialLinks.map((link, index) => {
@@ -209,7 +203,6 @@ export function DJHero({ siteSettings, heroDesktopMedia, heroMobileMedia, heroOv
                 })}
               </div>
 
-              {/* Language Switcher Flags - after social icons */}
               <LanguageSwitcher />
 
               <button
@@ -223,7 +216,6 @@ export function DJHero({ siteSettings, heroDesktopMedia, heroMobileMedia, heroOv
             </div>
           </div>
 
-          {/* Mobile menu */}
           {mobileOpen && (
             <div className="md:hidden mt-3 bg-primary/10 backdrop-blur-sm rounded-md p-3 space-y-2 shadow-lg">
               <a href="#music" onClick={() => setMobileOpen(false)} className="block text-foreground hover:text-primary px-3 py-2 rounded focus-visible:ring-2 focus-visible:ring-white">{t("nav.music")}</a>
@@ -235,9 +227,6 @@ export function DJHero({ siteSettings, heroDesktopMedia, heroMobileMedia, heroOv
         </nav>
       </header>
 
-      {/* Background overlay - removido pois o DynamicBackground já tem overlay configurável */}
-
-      {/* Content - simplified centered hero (header/nav kept) */}
       <div className="relative z-30 w-full flex items-center justify-center min-h-screen">
         <div className="text-center px-6 py-32">
           <h2 className="!text-[24px] md:!text-[24px] uppercase tracking-wider text-white opacity-80">{t("hero.listening")}</h2>
@@ -246,11 +235,9 @@ export function DJHero({ siteSettings, heroDesktopMedia, heroMobileMedia, heroOv
       </div>
 
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center justify-center">
-        {/* Desktop / tablet: mouse frame with bouncing dot */}
         <div className="hidden sm:flex w-6 h-10 border-2 border-secondary/40 rounded-full items-start justify-center p-2">
           <div className="w-1.5 h-3 bg-primary rounded-full animate-bounce" />
         </div>
-        {/* Mobile: only the small bouncing dot (no round frame) */}
         <div className="flex sm:hidden items-center justify-center">
           <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />
         </div>

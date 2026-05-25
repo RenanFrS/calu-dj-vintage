@@ -5,15 +5,17 @@ export const getPayload = async () => {
   return getPayloadServer({ config: configPromise })
 }
 
-// Funções auxiliares para buscar dados
+// Profundidade padrão para popular relações com Media nas queries do frontend.
+const DEFAULT_DEPTH = 2
+
 export async function getSiteSettings() {
   const payload = await getPayload()
-  return payload.findGlobal({ slug: 'site-settings' })
+  return payload.findGlobal({ slug: 'site-settings', depth: DEFAULT_DEPTH })
 }
 
 export async function getAbout() {
   const payload = await getPayload()
-  return payload.findGlobal({ slug: 'about' })
+  return payload.findGlobal({ slug: 'about', depth: DEFAULT_DEPTH })
 }
 
 export async function getTours(limit = 10) {
@@ -22,6 +24,7 @@ export async function getTours(limit = 10) {
     collection: 'tours',
     sort: 'date',
     limit,
+    depth: DEFAULT_DEPTH,
     where: {
       date: {
         greater_than_equal: new Date().toISOString(),
@@ -37,6 +40,7 @@ export async function getSets(limit = 10) {
     collection: 'sets',
     sort: 'order',
     limit,
+    depth: DEFAULT_DEPTH,
   })
   return result.docs
 }
@@ -47,6 +51,7 @@ export async function getGalleryImages(limit = 20) {
     collection: 'gallery-images',
     sort: 'order',
     limit,
+    depth: DEFAULT_DEPTH,
   })
   return result.docs
 }

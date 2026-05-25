@@ -2,12 +2,17 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
+import { buildCloudinaryVideo } from '@/lib/cloudinary/urls'
 
-interface MediaSource {
+export interface MediaSource {
   url: string
   mimeType?: string
   /** URL de uma imagem para usar como poster/fallback quando o vídeo não pode iniciar (ex: Low Power Mode) */
   posterUrl?: string
+  /** publicId do Cloudinary (quando aplicável) */
+  cloudinaryPublicId?: string
+  /** Tipo de recurso no Cloudinary (image, video, raw) */
+  cloudinaryResourceType?: 'image' | 'video' | 'raw'
 }
 
 interface DynamicBackgroundProps {
@@ -26,12 +31,13 @@ interface DynamicBackgroundProps {
 // Detecta se a mídia é um vídeo baseado no mimeType ou extensão
 function isVideo(media: MediaSource | null | undefined): boolean {
   if (!media?.url) return false
-  
+  if (media.cloudinaryResourceType === 'video') return true
+
   const videoMimeTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime', 'video/mov']
   if (media.mimeType && videoMimeTypes.includes(media.mimeType)) {
     return true
   }
-  
+
   // Fallback: verificar extensão
   const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.m4v']
   const url = media.url.toLowerCase()
@@ -145,14 +151,14 @@ function VideoBackground({
 }
 
 // Componente de imagem/GIF
-function ImageBackground({ 
-  src, 
+function ImageBackground({
+  src,
   priority = false,
-  className = '' 
-}: { 
+  className = '',
+}: {
   src: string
   priority?: boolean
-  className?: string 
+  className?: string
 }) {
   return (
     <Image
@@ -161,7 +167,7 @@ function ImageBackground({
       fill
       className={`object-cover ${className}`}
       priority={priority}
-      unoptimized={src.toLowerCase().includes('.gif')} // Não otimizar GIFs para manter animação
+      unoptimized={src.toLowerCase().includes('.gif')}
     />
   )
 }
@@ -193,19 +199,19 @@ export function DynamicBackground({
     if (!media?.url) return null
 
     if (isVideo(media)) {
+      const videoSrc = media.cloudinaryPublicId
+        ? buildCloudinaryVideo(media.cloudinaryPublicId) || media.url
+        : media.url
       return (
         <div className={`absolute inset-0 ${visibilityClass}`}>
-          <VideoBackground src={media.url} poster={media.posterUrl} />
+          <VideoBackground src={videoSrc} poster={media.posterUrl} />
         </div>
       )
     }
 
     return (
       <div className={`absolute inset-0 ${visibilityClass}`}>
-        <ImageBackground 
-          src={media.url} 
-          priority={priority}
-        />
+        <ImageBackground src={media.url} priority={priority} />
       </div>
     )
   }
@@ -242,22 +248,36 @@ export function DynamicBackground({
 
 // Helper para converter Media do Payload para MediaSource
 export function toMediaSource(
-  media: { url?: string; mimeType?: string } | string | null | undefined,
-  posterUrl?: string
+  media:
+    | {
+        url?: string
+        mimeType?: string
+        cloudinaryPublicId?: string
+        cloudinaryResourceType?: 'image' | 'video' | 'raw'
+        cloudinarySecureUrl?: string
+      }
+    | string
+    | null
+    | undefined,
+  posterUrl?: string,
 ): MediaSource | null {
   if (!media) return null
-  
+
   if (typeof media === 'string') {
-    return { url: media, posterUrl }
-  }
-  
-  if (media.url) {
-    return {
-      url: media.url,
-      mimeType: media.mimeType,
-      posterUrl
+    if (media.startsWith('http://') || media.startsWith('https://') || media.startsWith('/')) {
+      return { url: media, posterUrl }
     }
+    return null
   }
-  
-  return null
+
+  const url = media.cloudinarySecureUrl || media.url
+  if (!url) return null
+
+  return {
+    url,
+    mimeType: media.mimeType,
+    posterUrl,
+    cloudinaryPublicId: media.cloudinaryPublicId,
+    cloudinaryResourceType: media.cloudinaryResourceType,
+  }
 }

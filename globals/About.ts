@@ -1,8 +1,16 @@
 import type { GlobalConfig } from 'payload'
+import { revalidateHomeAfterChange } from '../lib/revalidate'
 
 export const About: GlobalConfig = {
   slug: 'about',
   label: 'Seção Quem Sou',
+  admin: {
+    group: 'Configurações',
+    description: 'Conteúdo da seção "Quem Sou" em PT/EN/FR.',
+  },
+  hooks: {
+    afterChange: [revalidateHomeAfterChange],
+  },
   access: {
     read: () => true,
   },

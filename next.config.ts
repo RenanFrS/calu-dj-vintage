@@ -1,13 +1,6 @@
 import type { NextConfig } from "next";
 import { withPayload } from "@payloadcms/next/withPayload";
 
-const s3Bucket = process.env.S3_BUCKET;
-const s3Region = process.env.S3_REGION;
-const s3Endpoint = process.env.S3_ENDPOINT;
-
-// Tenta extrair o hostname limpo do endpoint do R2 (remove https://)
-const r2Hostname = s3Endpoint ? new URL(s3Endpoint).hostname : null;
-
 const nextConfig: NextConfig = {
   reactCompiler: false,
   // Silencia avisos de deprecação do Sass @import (usados pelo Payload CMS)
@@ -23,26 +16,17 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https' as const,
-        hostname: 's3.amazonaws.com',
+        hostname: 'res.cloudinary.com',
       },
-      // Configuração dinâmica para S3/R2
-      ...(s3Bucket && s3Region
-        ? [
-            {
-              protocol: 'https' as const,
-              hostname: `${s3Bucket}.s3.${s3Region}.amazonaws.com`,
-            },
-          ]
-        : []),
-      // Configuração específica para o Cloudflare R2
-      ...(r2Hostname
-        ? [
-            {
-              protocol: 'https' as const,
-              hostname: r2Hostname,
-            },
-          ]
-        : []),
+      {
+        protocol: 'https' as const,
+        hostname: 'player.cloudinary.com',
+      },
+      // Permite carregar mídias servidas localmente pelo Payload em desenvolvimento
+      {
+        protocol: 'http' as const,
+        hostname: 'localhost',
+      },
     ],
   },
   // Transpile PayloadCMS packages
