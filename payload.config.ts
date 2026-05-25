@@ -23,7 +23,35 @@ import { isCloudinaryConfigured } from './lib/cloudinary/client'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-const serverURL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+function normalizeUrl(raw: string | undefined | null): string | null {
+  if (!raw) return null
+  let u = raw.trim().replace(/\/+$/, '')
+  if (!u) return null
+  const doubleProto = u.match(/^https?:\/\/(https?:\/\/.+)$/i)
+  if (doubleProto) u = doubleProto[1].replace(/\/+$/, '')
+  if (!/^https?:\/\//i.test(u)) u = `https://${u}`
+  try {
+    return new URL(u).origin
+  } catch {
+    return null
+  }
+}
+
+const explicitServerURL = normalizeUrl(process.env.NEXT_PUBLIC_SERVER_URL)
+const vercelProdURL = normalizeUrl(process.env.VERCEL_PROJECT_PRODUCTION_URL)
+const vercelURL = normalizeUrl(process.env.VERCEL_URL)
+const localURL = process.env.NODE_ENV === 'production' ? null : 'http://localhost:3000'
+
+const serverURL =
+  explicitServerURL || vercelProdURL || vercelURL || localURL || 'http://localhost:3000'
+
+const allowedOrigins = Array.from(
+  new Set(
+    [explicitServerURL, vercelProdURL, vercelURL, localURL, serverURL].filter(
+      (u): u is string => !!u,
+    ),
+  ),
+)
 
 export default buildConfig({
   serverURL,
@@ -35,8 +63,8 @@ export default buildConfig({
 
   secret: process.env.PAYLOAD_SECRET || '',
 
-  cors: [serverURL].filter(Boolean),
-  csrf: [serverURL].filter(Boolean),
+  cors: allowedOrigins,
+  csrf: allowedOrigins,
 
   admin: {
     user: Users.slug,

@@ -22,6 +22,11 @@ export const cloudinaryAdapter = ({ folder }: CloudinaryAdapterArgs = {}): Adapt
       name: 'cloudinary',
 
       handleUpload: async ({ file, data }) => {
+        if (data.cloudinarySecureUrl) {
+          data.url = data.cloudinarySecureUrl as string
+          return data
+        }
+
         const cloudinary = getCloudinary()
         const resourceType = resourceTypeFromMime(file.mimeType)
         const publicId = stripExt(file.filename)

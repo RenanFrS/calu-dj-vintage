@@ -9,6 +9,9 @@ export const Media: CollectionConfig = {
   admin: {
     group: 'Administração',
     description: 'Repositório de imagens e vídeos enviados para o Cloudinary.',
+    components: {
+      beforeListTable: ['/components/admin/MediaDirectUpload#default'],
+    },
   },
   access: {
     read: () => true,

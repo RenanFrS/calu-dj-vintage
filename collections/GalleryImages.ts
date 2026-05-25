@@ -35,19 +35,6 @@ export const GalleryImages: CollectionConfig = {
       required: true,
     },
     {
-      name: 'imageCrop',
-      type: 'json',
-      label: 'Enquadramento',
-      admin: {
-        components: {
-          Field: {
-            path: '/components/admin/ImageCropField#default',
-            clientProps: { uploadFieldName: 'image', defaultAspect: 1 },
-          },
-        },
-      },
-    },
-    {
       name: 'order',
       type: 'number',
       label: 'Ordem de exibição',

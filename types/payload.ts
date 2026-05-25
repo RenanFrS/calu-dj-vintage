@@ -41,19 +41,10 @@ export interface Set {
   featured?: boolean
 }
 
-export interface ImageCrop {
-  x: number
-  y: number
-  width: number
-  height: number
-  aspect?: number | null
-}
-
 export interface GalleryImage {
   id: string
   title: string
   image: Media | string
-  imageCrop?: ImageCrop | null
   order?: number
   featured?: boolean
 }
@@ -69,14 +60,10 @@ export interface SiteSettings {
   logo?: Media | string
   logoAlt?: string
   heroBackgroundDesktop?: Media | string
-  heroBackgroundDesktopCrop?: ImageCrop | null
   heroBackgroundMobile?: Media | string
-  heroBackgroundMobileCrop?: ImageCrop | null
   heroOverlayOpacity?: number
   sectionsBackgroundDesktop?: Media | string
-  sectionsBackgroundDesktopCrop?: ImageCrop | null
   sectionsBackgroundMobile?: Media | string
-  sectionsBackgroundMobileCrop?: ImageCrop | null
   sectionsOverlayOpacity?: number
   socialLinks?: SocialLink[]
   heroTitle?: string

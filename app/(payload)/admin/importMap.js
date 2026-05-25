@@ -1,10 +1,10 @@
-import { default as default_e77a2eb3bcc3108a69f467307583e36f } from '../../../components/admin/ImageCropField'
+import { default as default_f63f11711d31b585e8cc6253efb1f18d } from '../../../components/admin/MediaDirectUpload'
 import { default as default_dfe4008080d895d460898c3a6155e9ba } from '../../../components/admin/Icon'
 import { default as default_91a09b539d3c86b0aebf520e7564ce08 } from '../../../components/admin/Logo'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 export const importMap = {
-  "/components/admin/ImageCropField#default": default_e77a2eb3bcc3108a69f467307583e36f,
+  "/components/admin/MediaDirectUpload#default": default_f63f11711d31b585e8cc6253efb1f18d,
   "/components/admin/Icon#default": default_dfe4008080d895d460898c3a6155e9ba,
   "/components/admin/Logo#default": default_91a09b539d3c86b0aebf520e7564ce08,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
