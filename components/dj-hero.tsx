@@ -3,12 +3,12 @@
 import { Menu, X } from "lucide-react"
 import { FaTiktok, FaSpotify, FaYoutube, FaSoundcloud, FaInstagram } from 'react-icons/fa'
 import Image from "next/image"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import type { SiteSettings } from "@/types/payload"
 import { getMediaUrl } from "@/types/payload"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { useI18n } from "@/lib/i18n-context"
-import { buildCloudinaryVideoIframe } from "@/lib/cloudinary/urls"
+import { buildCloudinaryVideo, buildCloudinaryVideoPoster } from "@/lib/cloudinary/urls"
 
 interface MediaSource {
   url: string
@@ -40,42 +40,110 @@ function isVideo(media: MediaSource | null | undefined): boolean {
   return videoExtensions.some(ext => media.url.toLowerCase().includes(ext))
 }
 
-function HeroCloudinaryVideo({ publicId }: { publicId: string }) {
-  const src = buildCloudinaryVideoIframe(publicId, {
-    autoplay: true,
-    loop: true,
-    muted: true,
-    controls: false,
-    fluid: true,
-  })
+function HeroVideo({ src, poster }: { src: string; poster?: string }) {
+  const videoRef = useRef<HTMLVideoElement | null>(null)
 
-  if (!src) return null
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
 
-  return (
-    <iframe
-      src={src}
-      title="Hero video"
-      allow="autoplay; encrypted-media; picture-in-picture"
-      allowFullScreen
-      frameBorder={0}
-      className="absolute inset-0 w-full h-full pointer-events-none"
-      style={{ width: '100%', height: '100%' }}
-    />
-  )
-}
+    video.muted = true
+    video.defaultMuted = true
+    video.setAttribute('muted', '')
+    video.setAttribute('playsinline', '')
+    video.setAttribute('webkit-playsinline', '')
+    video.setAttribute('autoplay', '')
+    video.removeAttribute('controls')
 
-function HeroFallbackVideo({ src }: { src: string }) {
+    let cancelled = false
+
+    const tryPlay = () => {
+      if (cancelled || !video) return
+      const p = video.play()
+      if (p && typeof p.catch === 'function') {
+        p.catch(() => {
+          // Autoplay bloqueado — registra listeners de gesto do usuário e tenta de novo
+          attachGestureListeners()
+        })
+      }
+    }
+
+    const gestureEvents: (keyof DocumentEventMap)[] = [
+      'touchstart',
+      'touchend',
+      'click',
+      'pointerdown',
+      'keydown',
+      'scroll',
+    ]
+
+    const onGesture = () => {
+      tryPlay()
+    }
+
+    let listenersAttached = false
+    const attachGestureListeners = () => {
+      if (listenersAttached) return
+      listenersAttached = true
+      gestureEvents.forEach((ev) => {
+        document.addEventListener(ev, onGesture, { passive: true, capture: true })
+      })
+    }
+    const detachGestureListeners = () => {
+      if (!listenersAttached) return
+      listenersAttached = false
+      gestureEvents.forEach((ev) => {
+        document.removeEventListener(ev, onGesture, { capture: true } as EventListenerOptions)
+      })
+    }
+
+    const onPlaying = () => {
+      detachGestureListeners()
+    }
+
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') tryPlay()
+    }
+
+    video.addEventListener('loadedmetadata', tryPlay)
+    video.addEventListener('loadeddata', tryPlay)
+    video.addEventListener('canplay', tryPlay)
+    video.addEventListener('playing', onPlaying)
+    document.addEventListener('visibilitychange', onVisibility)
+
+    // Tentativas escalonadas (alguns browsers liberam autoplay um pouco depois do load)
+    const timers = [0, 100, 400, 1000, 2500].map((ms) => window.setTimeout(tryPlay, ms))
+
+    tryPlay()
+
+    return () => {
+      cancelled = true
+      timers.forEach((t) => window.clearTimeout(t))
+      video.removeEventListener('loadedmetadata', tryPlay)
+      video.removeEventListener('loadeddata', tryPlay)
+      video.removeEventListener('canplay', tryPlay)
+      video.removeEventListener('playing', onPlaying)
+      document.removeEventListener('visibilitychange', onVisibility)
+      detachGestureListeners()
+    }
+  }, [src])
+
   return (
     <video
+      ref={videoRef}
+      src={src}
+      poster={poster}
       autoPlay
       loop
       muted
       playsInline
       preload="auto"
-      className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-    >
-      <source src={src} />
-    </video>
+      disablePictureInPicture
+      disableRemotePlayback
+      tabIndex={-1}
+      aria-hidden="true"
+      className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
+    />
   )
 }
 
@@ -111,10 +179,13 @@ export function DJHero({ siteSettings, heroDesktopMedia, heroMobileMedia, heroOv
     if (!currentMedia?.url) return null
 
     if (isVideo(currentMedia)) {
-      if (currentMedia.cloudinaryPublicId) {
-        return <HeroCloudinaryVideo publicId={currentMedia.cloudinaryPublicId} />
-      }
-      return <HeroFallbackVideo src={currentMedia.url} />
+      const videoSrc = currentMedia.cloudinaryPublicId
+        ? (buildCloudinaryVideo(currentMedia.cloudinaryPublicId) || currentMedia.url)
+        : currentMedia.url
+      const posterSrc = currentMedia.cloudinaryPublicId
+        ? buildCloudinaryVideoPoster(currentMedia.cloudinaryPublicId) || undefined
+        : undefined
+      return <HeroVideo src={videoSrc} poster={posterSrc} />
     }
 
     return (

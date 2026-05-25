@@ -45,6 +45,10 @@ const MasonryGallery: React.FC<MasonryProps & { images: MasonryImage[] }> = ({ i
   const y3 = useTransform(scrollYProgress, [0, 1], [0, height * 1.25]);
   const y4 = useTransform(scrollYProgress, [0, 1], [0, height * 3]);
 
+  // Velocidades adaptadas para o container mobile (menor altura)
+  const yMobile1 = useTransform(scrollYProgress, [0, 1], [0, height * 0.9]);
+  const yMobile2 = useTransform(scrollYProgress, [0, 1], [0, height * 1.6]);
+
   useEffect(() => {
     let lenis: any = null;
     let rafId: number | null = null;
@@ -90,17 +94,20 @@ const MasonryGallery: React.FC<MasonryProps & { images: MasonryImage[] }> = ({ i
       </div>
 
       {dimension.width <= 768 ? (
-        <div ref={gallery} className="container mx-auto px-4 space-y-4">
-          {Array.from({ length: Math.ceil(imgs.length / 2) }).map((_, row) => {
-            const left = normalize(imgs[row * 2]);
-            const right = normalize(imgs[row * 2 + 1]);
-            return (
-              <div key={row} className="grid grid-cols-[1fr_2fr] gap-4 items-start">
-                {left ? <MobileImage image={left} small index={row * 2} /> : <div />}
-                {right ? <MobileImage image={right} large index={row * 2 + 1} /> : <div />}
-              </div>
-            );
-          })}
+        <div
+          ref={gallery}
+          className="relative box-border flex h-[140vh] gap-3 overflow-hidden px-3"
+        >
+          <MobileColumn
+            images={imgs.filter((_, i) => i % 2 === 0)}
+            y={yMobile1}
+            offsetClass="-top-[25%]"
+          />
+          <MobileColumn
+            images={imgs.filter((_, i) => i % 2 === 1)}
+            y={yMobile2}
+            offsetClass="-top-[55%]"
+          />
         </div>
       ) : (
         <div ref={gallery} className="relative box-border flex h-[175vh] gap-[2vw] overflow-hidden bg-transparent p-[2vw]">
@@ -126,25 +133,35 @@ type ColumnProps = {
   y: MotionValue<number>;
 };
 
-const MobileImage: React.FC<{ image: { src: string; objectPosition?: string }; small?: boolean; large?: boolean; index: number }> = ({ image, small }) => {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["center end", "center start"] });
-  const y = useTransform(scrollYProgress, [0, 1], [20, -20]);
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.06, 1]);
-  const z = useTransform(scrollYProgress, [0, 0.5, 1], [1, 50, 1]);
-
+const MobileColumn = ({
+  images,
+  y,
+  offsetClass,
+}: {
+  images: (MasonryImage | undefined)[];
+  y: MotionValue<number>;
+  offsetClass: string;
+}) => {
   return (
     <motion.div
-      ref={ref}
-      style={{ y, scale, zIndex: z }}
-      className={`overflow-hidden bg-transparent ${small ? "h-48" : "h-72"}`}
+      style={{ y }}
+      className={`relative ${offsetClass} flex w-1/2 flex-1 flex-col gap-3 will-change-transform`}
     >
-      <img
-        src={image.src}
-        alt="gallery"
-        className="w-full h-full object-cover block"
-        style={image.objectPosition ? { objectPosition: image.objectPosition } : undefined}
-      />
+      {images.map((raw, i) => {
+        const image = normalize(raw);
+        if (!image) return <div key={i} />;
+        return (
+          <div key={i} className="relative w-full overflow-hidden">
+            <img
+              src={image.src}
+              alt={`gallery-${i}`}
+              loading="lazy"
+              className="block h-auto w-full object-cover"
+              style={image.objectPosition ? { objectPosition: image.objectPosition } : undefined}
+            />
+          </div>
+        );
+      })}
     </motion.div>
   );
 };

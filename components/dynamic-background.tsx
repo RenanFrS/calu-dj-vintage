@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import Image from 'next/image'
-import { buildCloudinaryVideo } from '@/lib/cloudinary/urls'
+import { buildCloudinaryVideo, buildCloudinaryVideoPoster } from '@/lib/cloudinary/urls'
 
 export interface MediaSource {
   url: string
@@ -44,26 +44,15 @@ function isVideo(media: MediaSource | null | undefined): boolean {
   return videoExtensions.some(ext => url.includes(ext))
 }
 
-// Detecta se a mídia é um GIF
-function isGif(media: MediaSource | null | undefined): boolean {
-  if (!media?.url) return false
-  
-  if (media.mimeType === 'image/gif') {
-    return true
-  }
-  
-  return media.url.toLowerCase().includes('.gif')
-}
-
 // Componente de vídeo com autoplay, loop e muted
-function VideoBackground({ 
-  src, 
+function VideoBackground({
+  src,
   poster,
-  className = '' 
-}: { 
+  className = ''
+}: {
   src: string
   poster?: string
-  className?: string 
+  className?: string
 }) {
   const videoRef = useRef<HTMLVideoElement>(null)
 
@@ -71,82 +60,108 @@ function VideoBackground({
     const video = videoRef.current
     if (!video) return
 
-    // Garantir autoplay mesmo em dispositivos móveis (especialmente Safari/iOS)
-    const playVideo = async () => {
-      try {
-        // Forçar atributos necessários para autoplay no Safari/iOS
-        // defaultMuted é crucial para Safari permitir autoplay
-        video.defaultMuted = true
-        video.muted = true
-        video.playsInline = true
-        video.loop = true
-        video.autoplay = true
-        
-        // Aguardar o vídeo estar pronto para tocar
-        if (video.readyState >= 2) {
-          await video.play()
-        } else {
-          // Aguardar o vídeo carregar o suficiente
-          video.addEventListener('canplay', async () => {
-            try {
-              await video.play()
-            } catch (e) {
-              // Silenciosamente ignorar erro de autoplay
-            }
-          }, { once: true })
-        }
-      } catch (error) {
-        // Lidar silenciosamente com erro de "Low Power Mode" ou outras restrições
-        // Não logar no console para não poluir em produção
-        if (error instanceof Error && error.name !== 'AbortError') {
-          // Tentar novamente após interação do usuário
-          const retryPlay = () => {
-            video.play().catch(() => {})
-            document.removeEventListener('click', retryPlay)
-            document.removeEventListener('touchstart', retryPlay)
-          }
-          document.addEventListener('click', retryPlay, { once: true })
-          document.addEventListener('touchstart', retryPlay, { once: true })
-        }
+    video.muted = true
+    video.defaultMuted = true
+    video.setAttribute('muted', '')
+    video.setAttribute('playsinline', '')
+    video.setAttribute('webkit-playsinline', '')
+    video.setAttribute('autoplay', '')
+    video.removeAttribute('controls')
+
+    let cancelled = false
+
+    const tryPlay = () => {
+      if (cancelled || !video) return
+      const p = video.play()
+      if (p && typeof p.catch === 'function') {
+        p.catch(() => {
+          attachGestureListeners()
+        })
       }
     }
 
-    playVideo()
+    const gestureEvents: (keyof DocumentEventMap)[] = [
+      'touchstart',
+      'touchend',
+      'click',
+      'pointerdown',
+      'keydown',
+      'scroll',
+    ]
 
-    // Replay quando o vídeo terminar (fallback para loop)
-    const handleEnded = () => {
-      video.currentTime = 0
-      video.play().catch(() => {})
+    const onGesture = () => {
+      tryPlay()
     }
 
-    video.addEventListener('ended', handleEnded)
-    return () => video.removeEventListener('ended', handleEnded)
-  }, [src])
+    let listenersAttached = false
+    const attachGestureListeners = () => {
+      if (listenersAttached) return
+      listenersAttached = true
+      gestureEvents.forEach((ev) => {
+        document.addEventListener(ev, onGesture, { passive: true, capture: true })
+      })
+    }
+    const detachGestureListeners = () => {
+      if (!listenersAttached) return
+      listenersAttached = false
+      gestureEvents.forEach((ev) => {
+        document.removeEventListener(ev, onGesture, { capture: true } as EventListenerOptions)
+      })
+    }
 
-  // Detectar tipo de vídeo pela extensão
-  const getVideoType = (url: string): string => {
-    const lowerUrl = url.toLowerCase()
-    if (lowerUrl.includes('.webm')) return 'video/webm'
-    if (lowerUrl.includes('.ogg') || lowerUrl.includes('.ogv')) return 'video/ogg'
-    if (lowerUrl.includes('.mov')) return 'video/quicktime'
-    return 'video/mp4'
-  }
+    const onPlaying = () => {
+      detachGestureListeners()
+    }
+
+    const onEnded = () => {
+      video.currentTime = 0
+      tryPlay()
+    }
+
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') tryPlay()
+    }
+
+    video.addEventListener('loadedmetadata', tryPlay)
+    video.addEventListener('loadeddata', tryPlay)
+    video.addEventListener('canplay', tryPlay)
+    video.addEventListener('playing', onPlaying)
+    video.addEventListener('ended', onEnded)
+    document.addEventListener('visibilitychange', onVisibility)
+
+    const timers = [0, 100, 400, 1000, 2500].map((ms) => window.setTimeout(tryPlay, ms))
+    tryPlay()
+
+    return () => {
+      cancelled = true
+      timers.forEach((t) => window.clearTimeout(t))
+      video.removeEventListener('loadedmetadata', tryPlay)
+      video.removeEventListener('loadeddata', tryPlay)
+      video.removeEventListener('canplay', tryPlay)
+      video.removeEventListener('playing', onPlaying)
+      video.removeEventListener('ended', onEnded)
+      document.removeEventListener('visibilitychange', onVisibility)
+      detachGestureListeners()
+    }
+  }, [src])
 
   return (
     <video
       ref={videoRef}
+      src={src}
       autoPlay
       loop
       muted
       playsInline
       preload="auto"
       poster={poster}
-      className={`w-full h-full object-cover ${className}`}
+      disablePictureInPicture
+      disableRemotePlayback
+      tabIndex={-1}
+      aria-hidden="true"
+      className={`w-full h-full object-cover select-none ${className}`}
       style={{ pointerEvents: 'none' }}
-    >
-      <source src={src} type={getVideoType(src)} />
-      Seu navegador não suporta vídeos.
-    </video>
+    />
   )
 }
 
@@ -165,7 +180,9 @@ function ImageBackground({
       src={src}
       alt="Background"
       fill
-      className={`object-cover ${className}`}
+      sizes="100vw"
+      className={`object-cover object-center ${className}`}
+      style={{ objectPosition: 'center center' }}
       priority={priority}
       unoptimized={src.toLowerCase().includes('.gif')}
     />
@@ -179,18 +196,6 @@ export function DynamicBackground({
   className = '',
   priority = true
 }: DynamicBackgroundProps) {
-  const [isMobile, setIsMobile] = useState(false)
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
-    
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
-
   // Usa mobile se disponível, senão fallback para desktop
   const mobileSource = mobileMedia?.url ? mobileMedia : desktopMedia
   const desktopSource = desktopMedia
@@ -202,9 +207,15 @@ export function DynamicBackground({
       const videoSrc = media.cloudinaryPublicId
         ? buildCloudinaryVideo(media.cloudinaryPublicId) || media.url
         : media.url
+      // Poster automático do primeiro frame (fallback para iOS Low Power Mode etc.)
+      const posterSrc =
+        media.posterUrl ||
+        (media.cloudinaryPublicId
+          ? buildCloudinaryVideoPoster(media.cloudinaryPublicId) || undefined
+          : undefined)
       return (
         <div className={`absolute inset-0 ${visibilityClass}`}>
-          <VideoBackground src={videoSrc} poster={media.posterUrl} />
+          <VideoBackground src={videoSrc} poster={posterSrc} />
         </div>
       )
     }

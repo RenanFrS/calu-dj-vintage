@@ -134,3 +134,16 @@ export function buildCloudinaryVideo(publicId: string, transforms = 'f_auto,q_au
   if (!CLOUD_NAME || !publicId) return ''
   return `https://res.cloudinary.com/${CLOUD_NAME}/video/upload/${transforms}/${publicId}.mp4`
 }
+
+/**
+ * Poster (frame estático) de um vídeo do Cloudinary, útil como fallback
+ * quando o autoplay é bloqueado (ex: iOS Low Power Mode).
+ * `so_0` = start offset 0 (primeiro frame).
+ */
+export function buildCloudinaryVideoPoster(
+  publicId: string,
+  transforms = 'so_0,f_auto,q_auto',
+): string {
+  if (!CLOUD_NAME || !publicId) return ''
+  return `https://res.cloudinary.com/${CLOUD_NAME}/video/upload/${transforms}/${publicId}.jpg`
+}
