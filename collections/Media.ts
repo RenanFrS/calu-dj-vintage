@@ -18,6 +18,8 @@ export const Media: CollectionConfig = {
   },
   upload: {
     mimeTypes: ['image/*', 'video/*'],
+    crop: false,
+    focalPoint: false,
     adminThumbnail: ({ doc }) => {
       const record = doc as Record<string, unknown>
       return (record.cloudinarySecureUrl as string) || (record.url as string) || null

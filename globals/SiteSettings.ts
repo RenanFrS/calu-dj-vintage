@@ -49,12 +49,40 @@ export const SiteSettings: GlobalConfig = {
               },
             },
             {
+              name: 'heroBackgroundDesktopCrop',
+              type: 'json',
+              label: 'Enquadramento Desktop',
+              admin: {
+                description: 'Disponível apenas para imagens.',
+                components: {
+                  Field: {
+                    path: '/components/admin/ImageCropField#default',
+                    clientProps: { uploadFieldName: 'heroBackgroundDesktop', defaultAspect: 16 / 9 },
+                  },
+                },
+              },
+            },
+            {
               name: 'heroBackgroundMobile',
               type: 'upload',
               relationTo: 'media',
               label: 'Background Mobile',
               admin: {
                 description: 'Aceita: Imagem (JPG, PNG, WebP), GIF animado ou Vídeo (MP4, WebM). Resolução recomendada: 1080x1920. Se vazio, usa o desktop.',
+              },
+            },
+            {
+              name: 'heroBackgroundMobileCrop',
+              type: 'json',
+              label: 'Enquadramento Mobile',
+              admin: {
+                description: 'Disponível apenas para imagens.',
+                components: {
+                  Field: {
+                    path: '/components/admin/ImageCropField#default',
+                    clientProps: { uploadFieldName: 'heroBackgroundMobile', defaultAspect: 9 / 16 },
+                  },
+                },
               },
             },
             {
@@ -84,12 +112,40 @@ export const SiteSettings: GlobalConfig = {
               },
             },
             {
+              name: 'sectionsBackgroundDesktopCrop',
+              type: 'json',
+              label: 'Enquadramento Seções - Desktop',
+              admin: {
+                description: 'Disponível apenas para imagens.',
+                components: {
+                  Field: {
+                    path: '/components/admin/ImageCropField#default',
+                    clientProps: { uploadFieldName: 'sectionsBackgroundDesktop', defaultAspect: 16 / 9 },
+                  },
+                },
+              },
+            },
+            {
               name: 'sectionsBackgroundMobile',
               type: 'upload',
               relationTo: 'media',
               label: 'Background Seções - Mobile',
               admin: {
                 description: 'Se vazio, usa o desktop',
+              },
+            },
+            {
+              name: 'sectionsBackgroundMobileCrop',
+              type: 'json',
+              label: 'Enquadramento Seções - Mobile',
+              admin: {
+                description: 'Disponível apenas para imagens.',
+                components: {
+                  Field: {
+                    path: '/components/admin/ImageCropField#default',
+                    clientProps: { uploadFieldName: 'sectionsBackgroundMobile', defaultAspect: 9 / 16 },
+                  },
+                },
               },
             },
             {
