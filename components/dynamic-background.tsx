@@ -129,18 +129,52 @@ function VideoBackground({
     video.addEventListener('ended', onEnded)
     document.addEventListener('visibilitychange', onVisibility)
 
-    const timers = [0, 100, 400, 1000, 2500].map((ms) => window.setTimeout(tryPlay, ms))
+    const onWindowLoad = () => tryPlay()
+    const onPageShow = () => tryPlay()
+    window.addEventListener('load', onWindowLoad)
+    window.addEventListener('pageshow', onPageShow)
+
+    let idleId: number | undefined
+    type WithIdle = Window & { requestIdleCallback?: (cb: () => void) => number; cancelIdleCallback?: (id: number) => void }
+    const w = window as WithIdle
+    if (typeof w.requestIdleCallback === 'function') {
+      idleId = w.requestIdleCallback(() => tryPlay())
+    }
+
+    const timers = [0, 100, 400, 1000, 2500, 3000, 5000, 8000].map((ms) =>
+      window.setTimeout(() => {
+        tryPlay()
+        if (ms === 3000 && video.paused) {
+          try {
+            document.dispatchEvent(new Event('click', { bubbles: true }))
+            document.dispatchEvent(new Event('touchstart', { bubbles: true }))
+            document.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+            video.dispatchEvent(new Event('click', { bubbles: true }))
+            video.click?.()
+            video.focus?.({ preventScroll: true })
+          } catch {
+            // ignore
+          }
+          tryPlay()
+        }
+      }, ms),
+    )
     tryPlay()
 
     return () => {
       cancelled = true
       timers.forEach((t) => window.clearTimeout(t))
+      if (idleId !== undefined && typeof w.cancelIdleCallback === 'function') {
+        w.cancelIdleCallback(idleId)
+      }
       video.removeEventListener('loadedmetadata', tryPlay)
       video.removeEventListener('loadeddata', tryPlay)
       video.removeEventListener('canplay', tryPlay)
       video.removeEventListener('playing', onPlaying)
       video.removeEventListener('ended', onEnded)
       document.removeEventListener('visibilitychange', onVisibility)
+      window.removeEventListener('load', onWindowLoad)
+      window.removeEventListener('pageshow', onPageShow)
       detachGestureListeners()
     }
   }, [src])
