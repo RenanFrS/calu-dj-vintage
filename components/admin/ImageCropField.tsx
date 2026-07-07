@@ -104,6 +104,11 @@ export default function ImageCropField({
   const imageUrl = media?.cloudinarySecureUrl || media?.url || null
   const isImage = media?.mimeType?.startsWith('image/') ?? false
 
+  // "Livre" usa a proporção natural da imagem: o recorte inicial cobre a
+  // imagem inteira (react-easy-crop cai em 4/3 quando aspect é undefined).
+  const naturalAspect =
+    media?.width && media?.height ? media.width / media.height : undefined
+
   const onCropComplete = useCallback((_: Area, areaPixels: Area) => {
     if (!areaPixels || areaPixels.width <= 0 || areaPixels.height <= 0) return
     setCroppedAreaPixels(areaPixels)
@@ -240,13 +245,13 @@ export default function ImageCropField({
               image={imageUrl}
               crop={crop}
               zoom={zoom}
-              aspect={aspect ?? undefined}
+              aspect={aspect ?? naturalAspect}
               onCropChange={setCrop}
               onZoomChange={setZoom}
               onCropComplete={onCropComplete}
               restrictPosition
               objectFit="contain"
-              minZoom={0.5}
+              minZoom={1}
               maxZoom={3}
             />
           </div>
@@ -275,7 +280,7 @@ export default function ImageCropField({
               <span>Zoom: {zoom.toFixed(2)}x</span>
               <input
                 type="range"
-                min={0.5}
+                min={1}
                 max={3}
                 step={0.01}
                 value={zoom}

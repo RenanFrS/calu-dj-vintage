@@ -74,29 +74,29 @@ export const About: GlobalConfig = {
           ],
         },
         {
-          label: 'English',
+          label: 'Inglês',
           fields: [
             {
               name: 'title_en',
               type: 'text',
-              label: 'Title',
+              label: 'Título',
               defaultValue: 'DJ Calu',
             },
             {
               name: 'subtitle_en',
               type: 'textarea',
-              label: 'Subtitle/Short Description',
+              label: 'Subtítulo/Descrição Curta',
               defaultValue: 'is a Franco-Brazilian artist born in Minas Gerais, whose musical identity is built from a strong multicultural heritage, with French, Tunisian and indigenous origins.',
             },
             {
               name: 'paragraphs_en',
               type: 'array',
-              label: 'Content Paragraphs',
+              label: 'Parágrafos de Conteúdo',
               fields: [
                 {
                   name: 'content',
                   type: 'textarea',
-                  label: 'Text',
+                  label: 'Texto',
                   required: true,
                 },
               ],
@@ -104,35 +104,35 @@ export const About: GlobalConfig = {
             {
               name: 'tagline_en',
               type: 'text',
-              label: 'Tagline',
+              label: 'Frase de destaque',
               defaultValue: 'The dance floor as a space of inclusion',
             },
           ],
         },
         {
-          label: 'Français',
+          label: 'Francês',
           fields: [
             {
               name: 'title_fr',
               type: 'text',
-              label: 'Titre',
+              label: 'Título',
               defaultValue: 'DJ Calu',
             },
             {
               name: 'subtitle_fr',
               type: 'textarea',
-              label: 'Sous-titre/Description courte',
+              label: 'Subtítulo/Descrição Curta',
               defaultValue: 'est une artiste franco-brésilienne née au Minas Gerais, dont l\'identité musicale se construit à partir d\'un fort héritage multiculturel, avec des origines françaises, tunisiennes et indigènes.',
             },
             {
               name: 'paragraphs_fr',
               type: 'array',
-              label: 'Paragraphes de contenu',
+              label: 'Parágrafos de Conteúdo',
               fields: [
                 {
                   name: 'content',
                   type: 'textarea',
-                  label: 'Texte',
+                  label: 'Texto',
                   required: true,
                 },
               ],
@@ -140,7 +140,7 @@ export const About: GlobalConfig = {
             {
               name: 'tagline_fr',
               type: 'text',
-              label: 'Phrase d\'accroche',
+              label: 'Frase de destaque',
               defaultValue: 'La piste comme espace d\'inclusion',
             },
           ],

@@ -44,8 +44,13 @@ export async function extractCropAsBlob(
   quality = 0.92,
 ): Promise<Blob> {
   const img = await loadCrossOriginImage(src)
-  const width = Math.max(1, Math.round(pixels.width))
-  const height = Math.max(1, Math.round(pixels.height))
+
+  // Clamp defensivo: garante que o retângulo de origem cabe na imagem,
+  // evitando recortes deslocados ou com áreas vazias.
+  const sx = Math.min(Math.max(0, Math.round(pixels.x)), Math.max(0, img.naturalWidth - 1))
+  const sy = Math.min(Math.max(0, Math.round(pixels.y)), Math.max(0, img.naturalHeight - 1))
+  const width = Math.max(1, Math.min(Math.round(pixels.width), img.naturalWidth - sx))
+  const height = Math.max(1, Math.min(Math.round(pixels.height), img.naturalHeight - sy))
 
   const canvas = document.createElement('canvas')
   canvas.width = width
@@ -58,17 +63,7 @@ export async function extractCropAsBlob(
     ctx.fillRect(0, 0, width, height)
   }
 
-  ctx.drawImage(
-    img,
-    Math.max(0, Math.round(pixels.x)),
-    Math.max(0, Math.round(pixels.y)),
-    width,
-    height,
-    0,
-    0,
-    width,
-    height,
-  )
+  ctx.drawImage(img, sx, sy, width, height, 0, 0, width, height)
 
   return canvasToBlob(canvas, mimeType, quality)
 }

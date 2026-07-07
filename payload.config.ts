@@ -11,10 +11,10 @@ import { Media } from './collections/Media'
 import { Tours } from './collections/Tours'
 import { Sets } from './collections/Sets'
 import { GalleryImages } from './collections/GalleryImages'
+import { Reviews } from './collections/Reviews'
 
 import { SiteSettings } from './globals/SiteSettings'
 import { About } from './globals/About'
-import { en } from '@payloadcms/translations/languages/en'
 import { pt } from '@payloadcms/translations/languages/pt'
 
 import { cloudinaryAdapter } from './lib/cloudinary/adapter'
@@ -57,8 +57,9 @@ export default buildConfig({
   serverURL,
 
   i18n: {
+    // Admin 100% em português: apenas pt-BR disponível (sem opção de trocar idioma).
     fallbackLanguage: 'pt',
-    supportedLanguages: { pt, en },
+    supportedLanguages: { pt },
   },
 
   secret: process.env.PAYLOAD_SECRET || '',
@@ -86,7 +87,7 @@ export default buildConfig({
     },
   },
 
-  collections: [Users, Media, Tours, Sets, GalleryImages],
+  collections: [Users, Media, Tours, Sets, GalleryImages, Reviews],
   globals: [SiteSettings, About],
 
   editor: lexicalEditor(),

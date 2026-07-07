@@ -42,7 +42,7 @@ export const GalleryImages: CollectionConfig = {
         components: {
           Field: {
             path: '/components/admin/ImageCropField#default',
-            clientProps: { uploadFieldName: 'image', defaultAspect: 1 },
+            clientProps: { uploadFieldName: 'image', defaultAspect: null },
           },
         },
       },

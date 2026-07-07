@@ -55,3 +55,14 @@ export async function getGalleryImages(limit = 20) {
   })
   return result.docs
 }
+
+export async function getReviews(limit = 12) {
+  const payload = await getPayload()
+  const result = await payload.find({
+    collection: 'reviews',
+    sort: ['-featured', 'order', '-date'],
+    limit,
+    depth: DEFAULT_DEPTH,
+  })
+  return result.docs
+}

@@ -100,8 +100,19 @@ export function Footer({ siteSettings }: FooterProps) {
       <div className="w-full border-t-2 border-secondary/30" />
 
       {/* Bottom */}
-      <div className="mx-auto max-w-screen-xl px-4 py-6 text-center text-sm text-muted-foreground">
-        {copyright}
+      <div className="mx-auto max-w-screen-xl px-4 py-6 text-center text-sm text-muted-foreground space-y-1">
+        {copyright && <p>{copyright}</p>}
+        <p>
+          Desenvolvido por{" "}
+          <a
+            href="https://www.instagram.com/renanrocha.01/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-secondary underline-offset-2 transition-colors hover:text-primary hover:underline"
+          >
+            Renan Rocha
+          </a>
+        </p>
       </div>
 
     </footer>

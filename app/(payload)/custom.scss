@@ -1,1 +1,11 @@
-/* Empty custom styles for Payload admin */
+/* Miniaturas do admin: mostrar a imagem inteira (sem corte visual).
+   O Payload usa object-fit: cover por padrão em .thumbnail, o que corta
+   a altura de imagens retrato/paisagem nas previews — o arquivo em si
+   nunca é alterado. */
+.thumbnail:not(.thumbnail--size-none) {
+  background: var(--theme-elevation-100);
+
+  img {
+    object-fit: contain;
+  }
+}

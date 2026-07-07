@@ -46,6 +46,14 @@ const translations: Record<Language, Record<string, string>> = {
     "quote.sendMessage": "Mande uma mensagem",
     "quote.or": "ou",
     "quote.directEmail": "Email direto",
+    // Google Reviews
+    "reviews.title": "Avaliações",
+    "reviews.subtitle": "Veja minhas últimas avaliações",
+    "reviews.cta": "Avaliar",
+    "reviews.viewAll": "Ver no Google",
+    "reviews.review": "avaliação",
+    "reviews.reviews": "avaliações",
+    "reviews.empty": "As avaliações aparecem aqui assim que forem adicionadas no painel de admin.",
     // Gallery
     "gallery.title": "Galeria",
     "gallery.configure": "Configure no seu painel de admin!",
@@ -94,6 +102,14 @@ const translations: Record<Language, Record<string, string>> = {
     "quote.sendMessage": "Send a message",
     "quote.or": "or",
     "quote.directEmail": "Direct Email",
+    // Google Reviews
+    "reviews.title": "Reviews",
+    "reviews.subtitle": "See my latest reviews",
+    "reviews.cta": "Write a review",
+    "reviews.viewAll": "View on Google",
+    "reviews.review": "review",
+    "reviews.reviews": "reviews",
+    "reviews.empty": "Reviews will appear here once they're added in the admin panel.",
     // Gallery
     "gallery.title": "Gallery",
     "gallery.configure": "Configure in your admin panel!",
@@ -142,6 +158,14 @@ const translations: Record<Language, Record<string, string>> = {
     "quote.sendMessage": "Envoyer un message",
     "quote.or": "ou",
     "quote.directEmail": "Email direct",
+    // Google Reviews
+    "reviews.title": "Avis",
+    "reviews.subtitle": "Voir mes derniers avis",
+    "reviews.cta": "Donner un avis",
+    "reviews.viewAll": "Voir sur Google",
+    "reviews.review": "avis",
+    "reviews.reviews": "avis",
+    "reviews.empty": "Les avis apparaîtront ici une fois ajoutés dans le panneau d'administration.",
     // Gallery
     "gallery.title": "Galerie",
     "gallery.configure": "Configurez dans votre panneau d'administration!",

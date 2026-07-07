@@ -6,6 +6,7 @@ import { DJHero } from "@/components/dj-hero"
 import { LatestTracks } from "@/components/latest-tracks"
 import Masonry from "@/components/Masonry"
 import { SpotifySection } from "@/components/spotify-section"
+import { GoogleReviewsSection } from "@/components/google-reviews-section"
 import { QuoteSection } from "@/components/quote-section"
 import { TourSection } from "@/components/tour-section"
 import { AboutSection } from "@/components/about-section"
@@ -13,7 +14,7 @@ import { Footer } from "@/components/footer"
 import { DynamicBackground, toMediaSource } from "@/components/dynamic-background"
 import { getMediaUrl } from "@/types/payload"
 import { I18nProvider } from "@/lib/i18n-context"
-import type { SiteSettings, About, Tour, Set, GalleryImage, Media } from "@/types/payload"
+import type { SiteSettings, About, Tour, Set, GalleryImage, Review, Media } from "@/types/payload"
 
 interface HomeClientProps {
   siteSettings: SiteSettings | null
@@ -21,6 +22,7 @@ interface HomeClientProps {
   tours: Tour[]
   sets: Set[]
   galleryImages: GalleryImage[]
+  reviews: Review[]
 }
 
 export default function HomeClient({
@@ -29,6 +31,7 @@ export default function HomeClient({
   tours,
   sets,
   galleryImages,
+  reviews,
 }: HomeClientProps) {
   const [loading, setLoading] = useState(true)
   const [showContent, setShowContent] = useState(false)
@@ -94,6 +97,7 @@ export default function HomeClient({
             <TourSection tours={tours} />
             <LatestTracks sets={sets} />
             <SpotifySection />
+            <GoogleReviewsSection reviews={reviews} />
             <QuoteSection />
           </div>
         </main>

@@ -88,6 +88,17 @@ export interface SiteSettings {
   ogImage?: Media | string
 }
 
+export interface Review {
+  id?: string
+  authorName: string
+  avatar?: Media | string
+  rating: number
+  text: string
+  date?: string
+  order?: number
+  featured?: boolean
+}
+
 export interface AboutParagraph {
   id?: string
   content: string
